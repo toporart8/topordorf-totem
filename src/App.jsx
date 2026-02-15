@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import DateInput from './components/DateInput';
+import DailyOracle from './components/DailyOracle';
 import { getSlavicHall, getZoroastrianTotem, getZodiac } from './utils/logic';
 import { products, categories } from './utils/products';
 
@@ -17,6 +18,7 @@ function App() {
   const [recommendedProduct, setRecommendedProduct] = useState(null);
   const [isCatalogOpen, setIsCatalogOpen] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [isOracleOpen, setIsOracleOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState(null);
 
   const findProduct = (slavicData, zoroData) => {
@@ -82,6 +84,12 @@ function App() {
           <p className="text-xs text-zinc-500 uppercase tracking-widest mt-2">
             Мифологический Калькулятор
           </p>
+          <button
+            onClick={() => setIsOracleOpen(true)}
+            className="mt-4 px-4 py-2 border border-orange-500/50 text-orange-500 text-xs font-bold uppercase tracking-widest rounded-full hover:bg-orange-500 hover:text-white transition-all animate-pulse shadow-[0_0_15px_rgba(249,115,22,0.3)]"
+          >
+            ✦ Знак Дня ✦
+          </button>
         </div>
 
         {/* Форма (Body) */}
@@ -394,6 +402,12 @@ function App() {
           )}
         </AnimatePresence>
       </div >
+
+      <DailyOracle
+        isOpen={isOracleOpen}
+        onClose={() => setIsOracleOpen(false)}
+        telegramLink={CONTACTS.telegram}
+      />
     </div >
   );
 }
