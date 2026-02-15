@@ -74,10 +74,15 @@ function App() {
     <div className="min-h-screen w-full bg-[#09090b] text-zinc-300 flex items-center justify-center p-4">
 
       {/* Карточка приложения */}
-      <div className="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl overflow-hidden my-8">
+      <div className="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl overflow-hidden my-8 relative">
+
+        {/* Background Logo */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20 z-0">
+          <img src="/images/oracle_bg.png" alt="" className="w-3/4 object-contain" />
+        </div>
 
         {/* Заголовок */}
-        <div className="bg-black/50 p-6 text-center border-b border-zinc-800">
+        <div className="bg-black/50 p-6 text-center border-b border-zinc-800 relative z-10">
           <h1 className="text-2xl font-bold text-white uppercase tracking-widest font-serif">
             ТопорДорф
           </h1>
@@ -112,24 +117,36 @@ function App() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.4 }}
-                className="mt-8 p-6 bg-black/40 border border-zinc-800 rounded text-center space-y-6"
+                className="mt-8 p-6 bg-black/40 border border-zinc-800 rounded text-center space-y-6 relative overflow-hidden"
               >
+                {/* Background Logo */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+                  <img src="/images/oracle_bg.png" alt="" className="w-3/4 object-contain opacity-30 brightness-50" />
+                </div>
+
                 {/* Славянский */}
-                <div>
+                <div className="relative z-10">
                   <h3 className="text-orange-500 text-sm uppercase tracking-wide">Твой Чертог</h3>
                   <p className="text-xl text-white font-medium font-serif mt-1">{result.slavic.hall}</p>
                   <p className="text-xs text-zinc-500 mt-1">{result.slavic.god}</p>
                 </div>
 
-                {/* Зороастрийский */}
-                <div>
-                  <h3 className="text-orange-500 text-sm uppercase tracking-wide">Твой Тотем</h3>
-                  <p className="text-xl text-white font-medium font-serif mt-1">{result.zoro.totem}</p>
-                  <p className="text-xs text-zinc-500 mt-1">{result.zoro.symbol}</p>
+                {/* Зороастрийский (Тотем) */}
+                <div className="relative">
+                  {/* Background Logo Centered on this section */}
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] flex items-center justify-center pointer-events-none z-0">
+                    <img src="/images/oracle_bg.png" alt="" className="w-full h-full object-contain opacity-30 brightness-50" />
+                  </div>
+
+                  <div className="relative z-10">
+                    <h3 className="text-orange-500 text-sm uppercase tracking-wide">Твой Тотем</h3>
+                    <p className="text-xl text-white font-medium font-serif mt-1">{result.zoro.totem}</p>
+                    <p className="text-xs text-zinc-500 mt-1">{result.zoro.symbol}</p>
+                  </div>
                 </div>
 
                 {/* Зодиак */}
-                <div>
+                <div className="relative z-10">
                   <h3 className="text-orange-500 text-sm uppercase tracking-wide">Знак Зодиака</h3>
                   <p className="text-xl text-white font-medium font-serif mt-1">{result.zodiac}</p>
                 </div>

@@ -8,7 +8,7 @@ export const products = [
         tags: ["волк", "ворон", "велес", "куница"],
         categorySlug: "amulets",
         links: {
-            wb: "https://www.wildberries.ru/catalog/0",
+            wb: "https://www.wildberries.ru/catalog/809634788/detail.aspx?targetUrl=EX",
             ozon: "https://www.ozon.ru/product/talisman-veles-3403078284/?at=Y7tjlXJANIMJGE9Eup0XZKmhP2xENPcOWW2BxUVVoO9o"
         }
     },
@@ -21,7 +21,7 @@ export const products = [
         tags: ["медведь", "сварог", "ворон", "лось"],
         categorySlug: "axes",
         links: {
-            wb: "https://www.wildberries.ru/catalog/0",
+            wb: "https://www.wildberries.ru/catalog/809634788/detail.aspx?targetUrl=EX",
             ozon: "https://www.ozon.ru/product/0"
         }
     },
@@ -34,7 +34,7 @@ export const products = [
         tags: ["финист", "сокол", "орел"],
         categorySlug: "figures",
         links: {
-            wb: "#",
+            wb: "https://www.wildberries.ru/catalog/809634788/detail.aspx?targetUrl=EX",
             ozon: "#"
         }
     },
@@ -47,7 +47,7 @@ export const products = [
         tags: ["лебедь", "щука", "дева", "ворон", "макошь"],
         categorySlug: "figures",
         links: {
-            wb: "#",
+            wb: "https://www.wildberries.ru/catalog/809634788/detail.aspx?targetUrl=EX",
             ozon: "#"
         }
     },
@@ -60,7 +60,7 @@ export const products = [
         tags: ["общий"],
         categorySlug: "amulets",
         links: {
-            wb: "#", // Пример: только WB
+            wb: "https://www.wildberries.ru/catalog/809634788/detail.aspx?targetUrl=EX",
             ozon: null
         }
     },
@@ -73,7 +73,7 @@ export const products = [
         tags: ["ворон", "коляда", "мудрость"],
         categorySlug: "axes",
         links: {
-            wb: "https://www.wildberries.ru",
+            wb: "https://www.wildberries.ru/catalog/809634788/detail.aspx?targetUrl=EX",
             ozon: "https://www.ozon.ru"
         }
     }

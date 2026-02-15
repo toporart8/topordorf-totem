@@ -80,10 +80,15 @@ const DailyOracle = ({ isOpen, onClose, telegramLink }) => {
                         onClick={(e) => e.stopPropagation()}
                         className="bg-zinc-900 border border-zinc-700 p-6 rounded-xl w-full max-w-lg shadow-2xl relative overflow-hidden"
                     >
+                        {/* Background Logo */}
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20 z-0">
+                            <img src="/images/oracle_bg.png" alt="" className="w-3/4 object-contain" />
+                        </div>
+
                         {/* Close Button */}
                         <button
                             onClick={onClose}
-                            className="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors"
+                            className="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors z-50"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
