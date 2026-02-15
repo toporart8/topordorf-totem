@@ -150,7 +150,7 @@ function App() {
                       <img
                         src={recommendedProduct.image}
                         alt={recommendedProduct.name}
-                        className="w-full aspect-square object-cover opacity-80 hover:opacity-100 transition-opacity"
+                        className="w-full aspect-[3/4] object-cover opacity-80 hover:opacity-100 transition-opacity"
                       />
                       <div className="p-4">
                         <h4 className="text-white font-serif text-lg leading-tight mb-2">
@@ -188,6 +188,21 @@ function App() {
                               </a>
                             )}
                           </div>
+
+                          <a
+                            href={CONTACTS.telegram}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full mt-3 py-3 bg-[#229ED9] hover:bg-[#1E8BBF] text-white font-bold uppercase rounded transition-all shadow-lg hover:shadow-blue-500/30 flex items-center justify-center gap-3 animate-pulse"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.48-1.02-2.38-1.63-1.05-.69-.37-1.07.23-1.68.15-.15 2.81-2.57 2.86-2.79.01-.05.01-.1-.02-.14-.03-.04-.08-.06-.11-.04-.08.02-1.29.82-3.64 2.41-.34.23-.66.35-.97.35-.32-.01-.94-.18-1.4-.33-.56-.18-1.01-.28-1.04-.58.02-.16.24-.32.65-.49 2.54-1.1 4.23-1.84 5.08-2.19 2.42-.99 2.92-1.16 3.25-1.16.07 0 .23.01.33.09.09.07.12.17.12.27 0 .1 0 .2-.01.24z" />
+                            </svg>
+                            <div className="flex flex-col items-center leading-none text-center">
+                              <span className="text-xs sm:text-sm">Получить больше полезной информации</span>
+                              <span className="text-xs sm:text-sm mt-0.5">Бесплатно</span>
+                            </div>
+                          </a>
 
                           {/* Кнопка "Вопрос Мастеру" */}
                           <button

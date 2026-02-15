@@ -91,7 +91,7 @@ const DailyOracle = ({ isOpen, onClose, telegramLink }) => {
                         </button>
 
                         <h2 className="text-2xl font-bold text-white text-center uppercase tracking-widest font-serif mb-8 text-orange-500">
-                            Гадание на День
+                            Твой совет на сегодня
                         </h2>
 
                         {!hasPredictedToday ? (
@@ -105,10 +105,13 @@ const DailyOracle = ({ isOpen, onClose, telegramLink }) => {
                                         onClick={() => handleCardClick(index)}
                                         className="aspect-[2/3] bg-zinc-800 border-2 border-zinc-600 rounded-lg cursor-pointer flex items-center justify-center relative overflow-hidden group"
                                     >
-                                        {/* "Back of card" texture simulation */}
-                                        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/wood-pattern.png')] opacity-20"></div>
-                                        <div className="z-10 text-4xl text-zinc-500 group-hover:text-orange-500 transition-colors">
-                                            ?
+                                        {/* Card Back Image */}
+                                        <div className="absolute inset-0">
+                                            <img
+                                                src="/images/card_back.jpg"
+                                                alt="Card Back"
+                                                className="w-full h-full object-cover"
+                                            />
                                         </div>
                                     </motion.div>
                                 ))}
@@ -152,19 +155,22 @@ const DailyOracle = ({ isOpen, onClose, telegramLink }) => {
                                         href={telegramLink}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center justify-center px-6 py-3 bg-[#229ED9] hover:bg-[#1E8BBF] text-white font-bold uppercase rounded-full transition-all shadow-lg hover:shadow-blue-500/30 gap-2 animate-pulse"
+                                        className="inline-flex items-center justify-center px-6 py-3 bg-[#229ED9] hover:bg-[#1E8BBF] text-white font-bold uppercase rounded-full transition-all shadow-lg hover:shadow-blue-500/30 gap-3 animate-pulse"
                                     >
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
                                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.48-1.02-2.38-1.63-1.05-.69-.37-1.07.23-1.68.15-.15 2.81-2.57 2.86-2.79.01-.05.01-.1-.02-.14-.03-.04-.08-.06-.11-.04-.08.02-1.29.82-3.64 2.41-.34.23-.66.35-.97.35-.32-.01-.94-.18-1.4-.33-.56-.18-1.01-.28-1.04-.58.02-.16.24-.32.65-.49 2.54-1.1 4.23-1.84 5.08-2.19 2.42-.99 2.92-1.16 3.25-1.16.07 0 .23.01.33.09.09.07.12.17.12.27 0 .1 0 .2-.01.24z" />
                                         </svg>
-                                        Получить полную трактовку
+                                        <div className="flex flex-col items-center leading-none text-center">
+                                            <span className="text-sm">Получить больше полезной информации</span>
+                                            <span className="text-sm mt-1">Бесплатно</span>
+                                        </div>
                                     </a>
                                 </motion.div>
                             </div>
                         )}
 
                         <div className="mt-6 text-center">
-                            <p className="text-xs text-zinc-600">
+                            <p className="text-base text-white font-medium drop-shadow-[0_0_10px_rgba(249,115,22,0.8)] animate-pulse">
                                 {hasPredictedToday ? "Знак на сегодня уже получен. Возвращайся завтра!" : "Выбери карту, чтобы узнать судьбу."}
                             </p>
                         </div>
