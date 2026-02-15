@@ -507,7 +507,7 @@ function App() {
             <h3 className="text-white font-serif text-lg mb-2">Хочешь знать больше о силе знаков?</h3>
             <p className="text-zinc-400 text-sm mb-4">Подписывайся на закрытый канал мастерской</p>
             <a
-              href={CONTACTS.telegram}
+              href="https://t.me/topordorf"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center px-6 py-3 bg-[#229ED9] hover:bg-[#1E8BBF] text-white font-bold uppercase rounded-full transition-all shadow-lg hover:shadow-blue-500/30 gap-2"
