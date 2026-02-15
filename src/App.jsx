@@ -19,6 +19,7 @@ function App() {
   const [isCatalogOpen, setIsCatalogOpen] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [isOracleOpen, setIsOracleOpen] = useState(false);
+  const [isLegendOpen, setIsLegendOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState(null);
 
   const findProduct = (slavicData, zoroData) => {
@@ -84,16 +85,16 @@ function App() {
         {/* Заголовок */}
         <div className="bg-black/50 p-6 text-center border-b border-zinc-800 relative z-10">
           <h1 className="text-2xl font-bold text-white uppercase tracking-widest font-serif">
-            ТопорДорф
+            АРТЕФАКТ
           </h1>
-          <p className="text-xs text-zinc-500 uppercase tracking-widest mt-2">
-            Мифологический Калькулятор
+          <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mt-3">
+            КОД СУДЬБЫ
           </p>
           <button
             onClick={() => setIsOracleOpen(true)}
             className="mt-4 px-4 py-2 border border-orange-500/50 text-orange-500 text-xs font-bold uppercase tracking-widest rounded-full hover:bg-orange-500 hover:text-white transition-all animate-pulse shadow-[0_0_15px_rgba(249,115,22,0.3)]"
           >
-            ✦ Знак Дня ✦
+            ✦ Твоя Карта Дня ✦
           </button>
         </div>
 
@@ -106,7 +107,7 @@ function App() {
             onClick={handleCalculate}
             className="w-full py-4 bg-zinc-100 text-black font-bold uppercase tracking-wider hover:bg-orange-600 hover:text-white transition-all duration-300 rounded cursor-pointer"
           >
-            Рассчитать Тотем
+            Узнать сой оберег
           </button>
 
           {/* Блок результатов */}
@@ -177,7 +178,15 @@ function App() {
                           {recommendedProduct.description}
                         </p>
                         <div className="mt-4">
-                          <div className="text-zinc-500 text-sm mb-1 text-left">
+                          {recommendedProduct.longDescription && (
+                            <button
+                              onClick={() => setIsLegendOpen(true)}
+                              className="text-amber-500 hover:text-amber-400 underline decoration-dotted text-xs sm:text-sm font-medium cursor-pointer mb-4 block text-left transition-colors"
+                            >
+                              ✦ Узнать значение символа
+                            </button>
+                          )}
+                          <div className="text-zinc-500 text-sm mb-2 text-left">
                             Цена без скидки: {recommendedProduct.price}
                           </div>
                           <div className="text-orange-500 font-bold text-sm mb-3 text-left animate-pulse">
@@ -440,6 +449,49 @@ function App() {
         onClose={() => setIsOracleOpen(false)}
         telegramLink={CONTACTS.telegram}
       />
+
+      {/* Модальное окно "Легенда" */}
+      <AnimatePresence>
+        {isLegendOpen && recommendedProduct && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+            onClick={() => setIsLegendOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-zinc-900 border border-amber-500/30 p-8 rounded-xl w-full max-w-md shadow-2xl space-y-6 relative overflow-hidden"
+            >
+              {/* Background Decoration */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-10">
+                <img src="/images/oracle_bg.png" alt="" className="w-3/4 object-contain brightness-50" />
+              </div>
+
+              <div className="relative z-10 text-center">
+                <h3 className="text-2xl font-bold text-amber-500 uppercase tracking-widest font-serif mb-4 drop-shadow-sm">
+                  {recommendedProduct.name}
+                </h3>
+                <div className="w-16 h-0.5 bg-amber-500/50 mx-auto mb-6"></div>
+                <p className="text-zinc-200 text-base leading-relaxed font-serif italic">
+                  {recommendedProduct.longDescription}
+                </p>
+              </div>
+
+              <button
+                onClick={() => setIsLegendOpen(false)}
+                className="w-full py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white font-bold uppercase rounded transition-colors tracking-widest text-xs relative z-10"
+              >
+                Закрыть
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div >
   );
 }

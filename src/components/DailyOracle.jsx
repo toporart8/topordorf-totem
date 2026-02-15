@@ -95,9 +95,12 @@ const DailyOracle = ({ isOpen, onClose, telegramLink }) => {
                             </svg>
                         </button>
 
-                        <h2 className="text-2xl font-bold text-white text-center uppercase tracking-widest font-serif mb-8 text-orange-500">
+                        <h2 className="text-2xl text-white font-serif uppercase tracking-widest mb-2 drop-shadow-[0_0_10px_rgba(255,255,255,0.5)] text-center">
                             Твой совет на сегодня
                         </h2>
+                        <p className="text-base text-white font-medium drop-shadow-[0_0_10px_rgba(249,115,22,0.8)] animate-pulse mb-6 text-center">
+                            {hasPredictedToday ? "Знак на сегодня уже получен. Возвращайся завтра!" : "Выбери карту, чтобы узнать судьбу."}
+                        </p>
 
                         {!hasPredictedToday ? (
                             // CARD SELECTION VIEW
@@ -113,7 +116,7 @@ const DailyOracle = ({ isOpen, onClose, telegramLink }) => {
                                         {/* Card Back Image */}
                                         <div className="absolute inset-0">
                                             <img
-                                                src="/images/card_back.jpg"
+                                                src="/images/card_back.JPG"
                                                 alt="Card Back"
                                                 className="w-full h-full object-cover"
                                             />
@@ -174,11 +177,7 @@ const DailyOracle = ({ isOpen, onClose, telegramLink }) => {
                             </div>
                         )}
 
-                        <div className="mt-6 text-center">
-                            <p className="text-base text-white font-medium drop-shadow-[0_0_10px_rgba(249,115,22,0.8)] animate-pulse">
-                                {hasPredictedToday ? "Знак на сегодня уже получен. Возвращайся завтра!" : "Выбери карту, чтобы узнать судьбу."}
-                            </p>
-                        </div>
+
 
                     </motion.div>
                 </motion.div>
