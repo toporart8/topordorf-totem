@@ -12,6 +12,26 @@ const CONTACTS = {
   max: "https://max.ru/u/f9LHodD0cOLV4pqZZg8Zbt2CkYFRwJfgzbCXhunpRVxVTjbhBp4zHw2YQM0",
   vk: "https://vk.com/твоя_ссылка"
 };
+
+const CollapsibleText = ({ text, maxLength = 200 }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  if (!text || text.length <= maxLength) return <p className="text-sm text-zinc-400 mt-2">{text}</p>;
+
+  return (
+    <div className="mt-2">
+      <p className="text-sm text-zinc-400">
+        {isExpanded ? text : `${text.slice(0, maxLength)}...`}
+      </p>
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="text-orange-500 text-xs uppercase font-bold mt-1 hover:text-orange-400 transition-colors"
+      >
+        {isExpanded ? "Свернуть" : "Читать далее"}
+      </button>
+    </div>
+  );
+};
 function App() {
   const [date, setDate] = useState({ day: '', month: '', year: '' });
   const [result, setResult] = useState(null);
@@ -72,7 +92,7 @@ function App() {
 
   return (
     // Главный контейнер (фон)
-    <div className="min-h-screen w-full bg-[#09090b] text-zinc-300 flex items-center justify-center p-4">
+    <div className="min-h-screen w-full bg-[#09090b] text-zinc-300 flex flex-col items-center justify-center p-4">
 
       {/* Карточка приложения */}
       <div className="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl overflow-hidden my-8 relative">
@@ -103,11 +123,14 @@ function App() {
           <DateInput value={date} onChange={setDate} />
 
           {/* Кнопка */}
+          {/* Кнопка */}
           <button
             onClick={handleCalculate}
-            className="w-full py-4 bg-zinc-100 text-black font-bold uppercase tracking-wider hover:bg-orange-600 hover:text-white transition-all duration-300 rounded cursor-pointer"
+            className="w-full py-4 bg-zinc-100 text-black font-bold uppercase tracking-wider hover:bg-orange-600 hover:text-white transition-all duration-300 rounded cursor-pointer relative overflow-hidden group animate-heartbeat hover:animate-none"
+            style={{ boxShadow: '0 0 20px rgba(249, 115, 22, 0.5)' }}
           >
-            Узнать сой оберег
+            <span className="relative z-10">Узнать свой оберег</span>
+            <div className="absolute inset-0 bg-orange-500 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
           </button>
 
           {/* Блок результатов */}
@@ -126,10 +149,12 @@ function App() {
                 </div>
 
                 {/* Славянский */}
+                {/* Славянский */}
                 <div className="relative z-10">
                   <h3 className="text-orange-500 text-sm uppercase tracking-wide">Твой Чертог</h3>
                   <p className="text-xl text-white font-medium font-serif mt-1">{result.slavic.hall}</p>
-                  <p className="text-xs text-zinc-500 mt-1">{result.slavic.god}</p>
+                  <p className="text-xs text-zinc-500 mt-1 mb-2">{result.slavic.god}</p>
+                  <CollapsibleText text={result.slavic.description || "Описание чертога пока не добавлено."} />
                 </div>
 
                 {/* Зороастрийский (Тотем) */}
@@ -142,8 +167,40 @@ function App() {
                   <div className="relative z-10">
                     <h3 className="text-orange-500 text-sm uppercase tracking-wide">Твой Тотем</h3>
                     <p className="text-xl text-white font-medium font-serif mt-1">{result.zoro.totem}</p>
-                    <p className="text-xs text-zinc-500 mt-1">{result.zoro.symbol}</p>
+                    <p className="text-xs text-zinc-500 mt-1 mb-2">{result.zoro.symbol}</p>
+                    <CollapsibleText text={result.zoro.description || "Описание тотема пока не добавлено."} />
                   </div>
+                </div>
+
+                {/* Share Buttons */}
+                <div className="flex justify-center gap-4 mt-6 relative z-20">
+                  <a
+                    href={`https://t.me/share/url?url=https://topordorf-totem.vercel.app&text=Мой славянский тотем — ${result.slavic.hall}. Узнай свой Код Судьбы здесь!`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 bg-blue-500 rounded-full text-white hover:bg-blue-600 transition-colors"
+                    title="Поделиться в Telegram"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.48-1.02-2.38-1.63-1.05-.69-.37-1.07.23-1.68.15-.15 2.81-2.57 2.86-2.79.01-.05.01-.1-.02-.14-.03-.04-.08-.06-.11-.04-.08.02-1.29.82-3.64 2.41-.34.23-.66.35-.97.35-.32-.01-.94-.18-1.4-.33-.56-.18-1.01-.28-1.04-.58.02-.16.24-.32.65-.49 2.54-1.1 4.23-1.84 5.08-2.19 2.42-.99 2.92-1.16 3.25-1.16.07 0 .23.01.33.09.09.07.12.17.12.27 0 .1 0 .2-.01.24z" /></svg>
+                  </a>
+                  <a
+                    href={`https://vk.com/share.php?url=https://topordorf-totem.vercel.app&title=Мой славянский тотем — ${result.slavic.hall}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 bg-blue-700 rounded-full text-white hover:bg-blue-800 transition-colors"
+                    title="Поделиться в VK"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M15.684 12.868c.571-.628 1.638-1.442 2.375-2.079.916-.791 1.618-.946 1.618-.946s.466-.08.683.21c.198.261.054.78.054.78s-.146 1.03-1.378 2.565c-1.326 1.637-1.218 1.488.583 3.693 1.085 1.339 1.543 2.547 1.543 2.547s.103.498-.328.698c-.461.213-1.298.03-1.298.03s-.475.056-1.155-.453c-1.096-.806-2.618-2.731-2.909-2.95-.398-.291-.702-.303-.923-.049-.304.341-.564 1.152-.619 1.879-.068.916.34 1.25.093 1.55-.246.302-1.336.416-3.218-.088-3.045-.815-5.642-4.102-7.85-7.794C2.26 6.942.5 2.126.5 2.126S.33 1.47.785 1.305c.421-.155 1.486-.065 1.486-.065s.443-.056.885.341c.203.181 3.553 7.828 3.553 7.828s.664 1.258.978 1.085c.664-.37.369-2.665.369-2.665s.03-2.6-.967-3.23c-.31-.194-.6-.23-1.01-.26-1.07-.06-.856-.475.14-.657.436-.08.76-.11 3.75-.11.664 0 1.954.068 2.454.34.258.14.922.842.277 3.52 0 0-.258 1.764.572 2.176.405.203 1.697-1.782 1.697-1.782s1.46-2.84 1.659-3.41c.099-.302.434-.842 1.542-.842h2.89s.892-.092 1.03.469c.148.608-.435 1.832-1.637 3.235z" /></svg>
+                  </a>
+                  <a
+                    href={`https://api.whatsapp.com/send?text=Мой славянский тотем — ${result.slavic.hall}. Узнай свой Код Судьбы здесь: https://topordorf-totem.vercel.app`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 bg-green-500 rounded-full text-white hover:bg-green-600 transition-colors"
+                    title="Поделиться в WhatsApp"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" /></svg>
+                  </a>
                 </div>
 
                 {/* Зодиак */}
@@ -438,6 +495,44 @@ function App() {
           )}
         </AnimatePresence>
       </div >
+
+      {/* Footer: Подписка и Отзывы */}
+      <div className="w-full max-w-2xl mt-12 space-y-8">
+        {/* Подписка */}
+        <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 text-center shadow-2xl relative overflow-hidden">
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-10">
+            <img src="/images/oracle_bg.png" alt="" className="w-full h-full object-contain" />
+          </div>
+          <div className="relative z-10">
+            <h3 className="text-white font-serif text-lg mb-2">Хочешь знать больше о силе знаков?</h3>
+            <p className="text-zinc-400 text-sm mb-4">Подписывайся на закрытый канал мастерской</p>
+            <a
+              href={CONTACTS.telegram}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center px-6 py-3 bg-[#229ED9] hover:bg-[#1E8BBF] text-white font-bold uppercase rounded-full transition-all shadow-lg hover:shadow-blue-500/30 gap-2"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.48-1.02-2.38-1.63-1.05-.69-.37-1.07.23-1.68.15-.15 2.81-2.57 2.86-2.79.01-.05.01-.1-.02-.14-.03-.04-.08-.06-.11-.04-.08.02-1.29.82-3.64 2.41-.34.23-.66.35-.97.35-.32-.01-.94-.18-1.4-.33-.56-.18-1.01-.28-1.04-.58.02-.16.24-.32.65-.49 2.54-1.1 4.23-1.84 5.08-2.19 2.42-.99 2.92-1.16 3.25-1.16.07 0 .23.01.33.09.09.07.12.17.12.27 0 .1 0 .2-.01.24z" /></svg>
+              Перейти в Telegram
+            </a>
+          </div>
+        </div>
+
+        {/* Отзывы */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[
+            { name: "Иван, г. Тверь", text: "Заказывал топор с Велесом. Работа — огонь, чувствуется мощь в руке." },
+            { name: "Ольга, Москва", text: "Амулет пришел быстро. Очень красивая детализация, ношу не снимая." },
+            { name: "Дмитрий, Екб", text: "Мастера своего дела. Тотем определили верно, характер совпал на 100%." }
+          ].map((review, i) => (
+            <div key={i} className="bg-black/40 border border-zinc-800 rounded-lg p-4 text-center">
+              <div className="flex justify-center mb-2 text-amber-500 text-xs">★★★★★</div>
+              <p className="text-zinc-300 text-xs italic mb-3">"{review.text}"</p>
+              <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">{review.name}</p>
+            </div>
+          ))}
+        </div>
+      </div>
 
       <DailyOracle
         isOpen={isOracleOpen}
