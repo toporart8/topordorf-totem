@@ -32,9 +32,29 @@ export default async function handler(req, res) {
             }
         );
 
-        const imageUrl = Array.isArray(output) ? output[0] : output;
+        // Robustly extract URL from Replicate output
+        let imageUrl = output;
 
-        console.log("Generation success:", imageUrl);
+        // 1. If it's an array, take the first item
+        if (Array.isArray(imageUrl)) {
+            imageUrl = imageUrl[0];
+        }
+
+        // 2. If it's an object (Replicate File), try to get the URL
+        if (imageUrl && typeof imageUrl === 'object') {
+            if (typeof imageUrl.url === 'function') {
+                // Replicate SDK File object
+                imageUrl = imageUrl.url();
+            } else if (imageUrl.url) {
+                // Plain object with url property
+                imageUrl = imageUrl.url;
+            } else if (imageUrl.toString && imageUrl.toString() !== '[object Object]') {
+                // Try toString if it gives something useful
+                imageUrl = imageUrl.toString();
+            }
+        }
+
+        console.log("Extracted Image URL:", imageUrl);
         res.status(200).json({ image: imageUrl });
 
     } catch (e) {
