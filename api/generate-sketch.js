@@ -21,11 +21,11 @@ export default async function handler(req, res) {
             Task: Create a highly detailed visual description for a black and white vector stencil.
             
             Guidelines:
-            - Describe the CENTRAL SUBJECT in action (e.g., not just "fishing", but "a fisherman reeling in a giant pike").
+            - Describe the CENTRAL SUBJECT in action (e.g., "a fisherman reeling in a giant pike").
             - Describe the BACKGROUND (e.g., "swirling river water, reeds, stylized clouds").
-            - Style: Woodcut, intricate linework, bold contours.
+            - Style: Minimalist stencil, bold solid black shapes, NO hatching, NO cross-hatching, NO shading.
             - Composition: Vertical orientation to fit an axe head.
-            - NO colors, NO gray, ONLY black and white.
+            - NO gray, NO gradients. Pure black and white.
             
             Output ONLY the English prompt description. No intro, no markdown.
         `;
@@ -51,10 +51,11 @@ export default async function handler(req, res) {
                              The input is a black and white mask of an axe head. 
                              Your task is to DRAW INSIDE the white area.
                              CONTENT: ${smartPrompt}.
-                             STYLE: Intricate black and white engraving, vector stencil, woodcut. 
-                             IMPORTANT: Keep the black background exactly as is. Only fill the white shape.`,
+                             STYLE: Minimalist vector stencil, bold solid black lines on white. 
+                             IMPORTANT: ABSOLUTELY NO GRAY, NO SHADING, NO HATCHING. Only solid black shapes.
+                             Keep the black background exactly as is.`,
                     image_input: [maskImage],
-                    aspect_ratio: "match_input_image", // Ensure output matches mask dimensions
+                    aspect_ratio: "match_input_image",
                     output_format: "png"
                 }
             }
