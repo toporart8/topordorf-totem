@@ -44,28 +44,29 @@ export default async function handler(req, res) {
             auth: process.env.REPLICATE_API_TOKEN,
         });
 
-        console.log("Отправляем запрос в Replicate...");
+        console.log("Отправляем запрос в Replicate (Correct Hash)...");
 
         // 3. Запуск генерации
-        // Используем версию: stability-ai/stable-diffusion-inpainting (официальная)
         const output = await replicate.run(
-            "stability-ai/stable-diffusion-inpainting:95b7223104132402a9ae91cc677285bc5eb997834bd2349fa486f53910fd595c",
+            "stability-ai/stable-diffusion-inpainting:95b7223104132402a9ae91cc677285bc5eb997834bd2349fa486f53910fd68b3",
             {
                 input: {
                     prompt: `black and white vector line art, engraving style, simple monochrome, high contrast, white background, no shading, ${prompt}`,
                     negative_prompt: "color, grey, shading, realistic, photo, blurry, watermark, text, bad quality, soft lines, gradient",
-                    image: finalMask, // На этой картинке рисуем
-                    mask: finalMask,  // В этой области рисуем
-                    num_inference_steps: 30, // Качество повыше
+                    image: finalMask,
+                    mask: finalMask,
+                    num_inference_steps: 25,
                     guidance_scale: 7.5,
-                    strength: 1.0 // Полная перерисовка
+                    strength: 1.0,
+                    scheduler: "DPMSolverMultistep", // Обновляем scheduler как в примере
+                    num_outputs: 1
                 }
             }
         );
 
         console.log("Готово:", output);
 
-        // Replicate возвращает массив, берем первую картинку
+        // Replicate возвращает массив
         const imageUrl = Array.isArray(output) ? output[0] : output;
         res.status(200).json({ image: imageUrl });
 
