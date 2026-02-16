@@ -41,30 +41,17 @@ const SketchGenerator = () => {
             const data = await response.json();
             console.log("Данные от сервера:", data);
 
-            if (data.error) {
-                throw new Error(data.error || 'Ошибка сервера');
-            }
+            if (data.error) throw new Error(data.error);
 
-            // --- ИСПРАВЛЕННЫЙ БЛОК ВЫБОРА ССЫЛКИ ---
-            let finalImageUrl = "";
-
-            if (typeof data.image === 'string') {
-                finalImageUrl = data.image; // Если пришла просто строка
-            } else if (Array.isArray(data.image)) {
-                finalImageUrl = data.image[0]; // Если пришел массив ссылок
-            } else if (data.image && data.image.url) {
-                finalImageUrl = data.image.url; // Если пришел объект с полем url
-            }
-
-            if (finalImageUrl) {
-                console.log("Устанавливаем URL картинки:", finalImageUrl);
-                setResultImage(finalImageUrl);
+            // Берем именно поле url из нашего нового ответа
+            if (data.url && typeof data.url === 'string') {
+                setResultImage(data.url);
             } else {
-                throw new Error("Сервер не вернул прямую ссылку на изображение. Проверьте консоль.");
+                throw new Error("Не удалось получить ссылку на изображение");
             }
 
         } catch (err) {
-            console.error("Ошибка во время генерации:", err);
+            console.error(err);
             setError(err.message || "Ошибка генерации");
         } finally {
             setLoading(false);
