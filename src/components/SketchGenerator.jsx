@@ -15,72 +15,28 @@ const SketchGenerator = () => {
         }
 
         setLoading(true);
-        setLoadingMessage("Gemini придумывает промпт...");
+        setLoadingMessage("FLUX создает эскиз...");
         setError(null);
         setResultImage(null);
 
         try {
-            // 1. Готовим маску (Client-side fetch)
-            const maskResponse = await fetch('/mask.png');
-            if (!maskResponse.ok) throw new Error("Не удалось загрузить маску (mask.png)");
-
-            const maskBlob = await maskResponse.blob();
-            const reader = new FileReader();
-            const maskBase64 = await new Promise((resolve) => {
-                reader.onloadend = () => resolve(reader.result);
-                reader.readAsDataURL(maskBlob);
-            });
-
-            // 2. Запрос к серверу (ЭТАП 1: ЗАПУСК)
-            const startRes = await fetch('/api/generate-sketch', {
+            // Запрос к серверу (прямой, сервер сам ждет FLUX)
+            const response = await fetch('/api/generate-sketch', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ prompt, maskImage: maskBase64 }),
+                body: JSON.stringify({ prompt }),
             });
 
-            const startData = await startRes.json();
-            console.log("Start response:", startData);
+            const data = await response.json();
 
-            if (startData.error) throw new Error(startData.error);
+            if (data.error) throw new Error(data.error);
 
-            const predictionId = startData.id;
-            if (!predictionId) throw new Error("Сервер не вернул ID задачи");
-
-            // 3. Цикл ожидания (Polling)
-            let status = "starting";
-            let finalImageUrl = "";
-
-            while (status !== "succeeded" && status !== "failed" && status !== "canceled") {
-                await new Promise(r => setTimeout(r, 2500)); // Ждем 2.5 секунды
-                setLoadingMessage("Replicate рисует по промпту Gemini... (15-20 сек)");
-
-                const checkRes = await fetch(`/api/generate-sketch?id=${predictionId}`);
-                const checkData = await checkRes.json();
-                console.log("Poll status:", checkData.status);
-
-                status = checkData.status;
-
-                if (status === "succeeded") {
-                    // Replicate returns output as array or string
-                    if (Array.isArray(checkData.output)) {
-                        finalImageUrl = checkData.output[0];
-                    } else {
-                        finalImageUrl = checkData.output;
-                    }
-                } else if (status === "failed") {
-                    throw new Error("Нейросеть не смогла завершить рисунок");
-                } else if (status === "canceled") {
-                    throw new Error("Генерация была отменена");
-                }
-            }
-
-            if (finalImageUrl) {
-                console.log("Устанавливаем URL картинки:", finalImageUrl);
-                setResultImage(finalImageUrl);
+            if (data.image) {
+                setResultImage(data.image);
             } else {
-                throw new Error("Не удалось получить ссылку на изображение после завершения");
+                throw new Error("Не удалось получить изображение");
             }
 
         } catch (err) {
