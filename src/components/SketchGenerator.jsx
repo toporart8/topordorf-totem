@@ -43,15 +43,15 @@ const SketchGenerator = () => {
 
             if (data.error) throw new Error(data.error);
 
-            // Берем именно поле url из нашего нового ответа
-            if (data.url && typeof data.url === 'string') {
-                setResultImage(data.url);
+            // ЧИТАЕМ ИМЕННО imageUrl
+            if (data.imageUrl) {
+                setResultImage(data.imageUrl);
             } else {
-                throw new Error("Не удалось получить ссылку на изображение");
+                throw new Error("Ссылка на картинку не получена");
             }
 
         } catch (err) {
-            console.error(err);
+            console.error("Ошибка во время генерации:", err);
             setError(err.message || "Ошибка генерации");
         } finally {
             setLoading(false);

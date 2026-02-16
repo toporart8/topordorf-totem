@@ -9,30 +9,35 @@ export default async function handler(req, res) {
 
     const { prompt, maskImage } = req.body;
 
+    if (!process.env.REPLICATE_API_TOKEN) {
+        return res.status(500).json({ error: "API токен не настроен в Vercel" });
+    }
+
     try {
         const replicate = new Replicate({ auth: process.env.REPLICATE_API_TOKEN });
 
-        // Используем проверенную версию модели
+        // Оптимизируем параметры для скорости (чтобы уложиться в 10 секунд)
         const output = await replicate.run(
             "stability-ai/stable-diffusion-inpainting:95b7223104132402a9ae91cc677285bc5eb997834bd2349fa486f53910fd595c",
             {
                 input: {
-                    prompt: `black and white line art, engraving style, high contrast, white background, ${prompt}`,
-                    negative_prompt: "color, photo, blurry, shading, gradient",
+                    prompt: `black and white vector line art, engraving, high contrast, ${prompt}`,
+                    negative_prompt: "color, photo, shading, blurry",
                     image: maskImage,
                     mask: maskImage,
-                    num_inference_steps: 25,
+                    num_inference_steps: 20, // Уменьшили с 30 до 20 для скорости
+                    guidance_scale: 7.0,
                     strength: 1.0
                 }
             }
         );
 
-        // Replicate возвращает массив ссылок. Берем первую и чистим её.
         const imageUrl = Array.isArray(output) ? output[0] : output;
 
         if (!imageUrl) throw new Error("Модель не вернула ссылку");
 
-        res.status(200).json({ url: imageUrl }); // Отправляем как { url: "ссылка" }
+        // Возвращаем чистую строку с URL
+        res.status(200).json({ imageUrl: imageUrl });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: error.message });
