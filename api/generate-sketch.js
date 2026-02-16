@@ -1,45 +1,43 @@
 import Replicate from "replicate";
 
-export const config = {
-    api: { bodyParser: { sizeLimit: '10mb' } },
-};
-
 export default async function handler(req, res) {
-    if (req.method !== "POST") return res.status(405).send("Method not allowed");
+    const replicate = new Replicate({ auth: process.env.REPLICATE_API_TOKEN });
 
-    const { prompt, maskImage } = req.body;
+    // ЭТАП 1: ЗАПУСК (POST запрос)
+    if (req.method === "POST") {
+        const { prompt, maskImage } = req.body;
+        try {
+            // Стиль ТопорДорф: ЧБ, линии под плоттер
+            const stylePrompt = "Strict black and white vector line art for plotter cutting, medium line thickness, no grey, no shading, white background. Top part: Zodiac sign. Bottom part: Slavic Hall symbol. Center: ";
 
-    if (!process.env.REPLICATE_API_TOKEN) {
-        return res.status(500).json({ error: "API токен не настроен в Vercel" });
-    }
-
-    try {
-        const replicate = new Replicate({ auth: process.env.REPLICATE_API_TOKEN });
-
-        // Оптимизируем параметры для скорости (чтобы уложиться в 10 секунд)
-        const output = await replicate.run(
-            "stability-ai/stable-diffusion-inpainting:95b7223104132402a9ae91cc677285bc5eb997834bd2349fa486f53910fd595c",
-            {
+            const prediction = await replicate.predictions.create({
+                // Используем проверенный хэш версии (Stable Diffusion Inpainting)
+                version: "95b7223104132402a9ae91cc677285bc5eb997834bd2349fa486f53910fd68b3",
                 input: {
-                    prompt: `black and white vector line art, engraving, high contrast, ${prompt}`,
-                    negative_prompt: "color, photo, shading, blurry",
+                    prompt: stylePrompt + prompt,
+                    negative_prompt: "color, photo, shading, realistic, gradient, blurry, grey lines",
                     image: maskImage,
                     mask: maskImage,
-                    num_inference_steps: 20, // Уменьшили с 30 до 20 для скорости
-                    guidance_scale: 7.0,
+                    num_inference_steps: 25,
                     strength: 1.0
-                }
-            }
-        );
+                },
+            });
+            return res.status(200).json({ id: prediction.id });
+        } catch (e) {
+            console.error(e);
+            return res.status(500).json({ error: e.message });
+        }
+    }
 
-        const imageUrl = Array.isArray(output) ? output[0] : output;
-
-        if (!imageUrl) throw new Error("Модель не вернула ссылку");
-
-        // Возвращаем чистую строку с URL
-        res.status(200).json({ imageUrl: imageUrl });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: error.message });
+    // ЭТАП 2: ПРОВЕРКА СТАТУСА (GET запрос)
+    if (req.method === "GET") {
+        const { id } = req.query;
+        try {
+            const prediction = await replicate.predictions.get(id);
+            return res.status(200).json(prediction);
+        } catch (e) {
+            console.error(e);
+            return res.status(500).json({ error: e.message });
+        }
     }
 }

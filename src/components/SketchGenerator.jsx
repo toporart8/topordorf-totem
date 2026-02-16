@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 const SketchGenerator = () => {
     const [prompt, setPrompt] = useState('');
     const [loading, setLoading] = useState(false);
+    const [loadingMessage, setLoadingMessage] = useState("Создаем шедевр...");
     const [resultImage, setResultImage] = useState(null);
     const [error, setError] = useState(null);
 
@@ -14,6 +15,7 @@ const SketchGenerator = () => {
         }
 
         setLoading(true);
+        setLoadingMessage("Запускаем нейросеть...");
         setError(null);
         setResultImage(null);
 
@@ -29,8 +31,8 @@ const SketchGenerator = () => {
                 reader.readAsDataURL(maskBlob);
             });
 
-            // 2. Запрос к серверу
-            const response = await fetch('/api/generate-sketch', {
+            // 2. Запрос к серверу (ЭТАП 1: ЗАПУСК)
+            const startRes = await fetch('/api/generate-sketch', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -38,16 +40,47 @@ const SketchGenerator = () => {
                 body: JSON.stringify({ prompt, maskImage: maskBase64 }),
             });
 
-            const data = await response.json();
-            console.log("Данные от сервера:", data);
+            const startData = await startRes.json();
+            console.log("Start response:", startData);
 
-            if (data.error) throw new Error(data.error);
+            if (startData.error) throw new Error(startData.error);
 
-            // ЧИТАЕМ ИМЕННО imageUrl
-            if (data.imageUrl) {
-                setResultImage(data.imageUrl);
+            const predictionId = startData.id;
+            if (!predictionId) throw new Error("Сервер не вернул ID задачи");
+
+            // 3. Цикл ожидания (Polling)
+            let status = "starting";
+            let finalImageUrl = "";
+
+            while (status !== "succeeded" && status !== "failed" && status !== "canceled") {
+                await new Promise(r => setTimeout(r, 2000)); // Ждем 2 секунды
+                setLoadingMessage("Нейросеть рисует... (обычно 15-20 сек)");
+
+                const checkRes = await fetch(`/api/generate-sketch?id=${predictionId}`);
+                const checkData = await checkRes.json();
+                console.log("Poll status:", checkData.status);
+
+                status = checkData.status;
+
+                if (status === "succeeded") {
+                    // Replicate returns output as array or string
+                    if (Array.isArray(checkData.output)) {
+                        finalImageUrl = checkData.output[0];
+                    } else {
+                        finalImageUrl = checkData.output;
+                    }
+                } else if (status === "failed") {
+                    throw new Error("Нейросеть не смогла создать эскиз (Status: failed)");
+                } else if (status === "canceled") {
+                    throw new Error("Генерация была отменена");
+                }
+            }
+
+            if (finalImageUrl) {
+                console.log("Устанавливаем URL картинки:", finalImageUrl);
+                setResultImage(finalImageUrl);
             } else {
-                throw new Error("Ссылка на картинку не получена");
+                throw new Error("Не удалось получить ссылку на изображение после завершения");
             }
 
         } catch (err) {
@@ -85,12 +118,12 @@ const SketchGenerator = () => {
                     disabled={loading}
                     className="w-full py-3 bg-orange-600 hover:bg-orange-700 text-white font-bold uppercase rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    {loading ? "Создаем шедевр..." : "Создать эскиз"}
+                    {loading ? loadingMessage : "Создать эскиз"}
                 </button>
             </div>
 
             {loading && (
-                <div id="sketch-loader" className="text-center mt-6 text-orange-500 animate-pulse">Духи кузницы работают...</div>
+                <div id="sketch-loader" className="text-center mt-6 text-orange-500 animate-pulse">{loadingMessage}</div>
             )}
 
             {error && (
