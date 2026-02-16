@@ -10,12 +10,12 @@ const SketchGenerator = () => {
 
     const generateSketch = async () => {
         if (!prompt) {
-            alert('Пожалуйста, опишите идею для эскиза!');
+            alert('Опишите идею эскиза!');
             return;
         }
 
         setLoading(true);
-        setLoadingMessage("Запускаем нейросеть...");
+        setLoadingMessage("Мастерская начинает работу...");
         setError(null);
         setResultImage(null);
 
@@ -53,8 +53,8 @@ const SketchGenerator = () => {
             let finalImageUrl = "";
 
             while (status !== "succeeded" && status !== "failed" && status !== "canceled") {
-                await new Promise(r => setTimeout(r, 2000)); // Ждем 2 секунды
-                setLoadingMessage("Нейросеть рисует... (обычно 15-20 сек)");
+                await new Promise(r => setTimeout(r, 2500)); // Ждем 2.5 секунды
+                setLoadingMessage("Куем эскиз... Обычно это занимает 15-20 секунд");
 
                 const checkRes = await fetch(`/api/generate-sketch?id=${predictionId}`);
                 const checkData = await checkRes.json();
