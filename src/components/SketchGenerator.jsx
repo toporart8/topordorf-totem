@@ -15,18 +15,29 @@ const SketchGenerator = () => {
         }
 
         setLoading(true);
-        setLoadingMessage("FLUX создает эскиз...");
+        setLoadingMessage("Онируем эскиз по маске...");
         setError(null);
         setResultImage(null);
 
         try {
-            // Запрос к серверу (прямой, сервер сам ждет FLUX)
+            // 1. Готовим маску (Client-side fetch) - обязательно для Inpainting
+            const maskResponse = await fetch('/mask.png');
+            if (!maskResponse.ok) throw new Error("Не удалось загрузить маску (mask.png)");
+
+            const maskBlob = await maskResponse.blob();
+            const reader = new FileReader();
+            const maskBase64 = await new Promise((resolve) => {
+                reader.onloadend = () => resolve(reader.result);
+                reader.readAsDataURL(maskBlob);
+            });
+
+            // 2. Отправляем запрос с маской
             const response = await fetch('/api/generate-sketch', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ prompt }),
+                body: JSON.stringify({ prompt, maskImage: maskBase64 }),
             });
 
             const data = await response.json();
