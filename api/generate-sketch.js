@@ -21,13 +21,14 @@ export default async function handler(req, res) {
             Task: Create a highly detailed visual description for a black and white vector stencil.
             
             Guidelines:
-            - Describe the CENTRAL SUBJECT in action (e.g., "a fisherman reeling in a giant pike").
-            - Describe the BACKGROUND (e.g., "swirling river water, reeds, stylized clouds").
-            - Style: Minimalist stencil, bold solid black shapes, NO hatching, NO cross-hatching, NO shading.
-            - Composition: Vertical orientation to fit an axe head.
-            - NO gray, NO gradients. Pure black and white.
+            Guidelines:
+            - SUBJECT: Based strictly on the User Input ("${prompt}").
+            - COMPOSITION: Create a full scene around the subject (e.g., if "Wolf", add forest/moon; if "Viking", add ship/sea).
+            - STYLE: Vintage Outdoor Badge style, Vector Illustration. 
+            - DETAILS: Bold lines, clear shapes, high contrast. 
+            - NO shading, NO stippling, NO gradients. Pure Black and White.
             
-            Output ONLY the English prompt description. No intro, no markdown.
+            Output ONLY the English prompt description.
         `;
 
         let smartPrompt = prompt;
@@ -48,12 +49,12 @@ export default async function handler(req, res) {
             {
                 input: {
                     prompt: `Transform this image. 
-                             The input is a black and white mask of an axe head. 
-                             Your task is to DRAW INSIDE the white area.
+                             Input is a mask. Draw INSIDE the white area.
                              CONTENT: ${smartPrompt}.
-                             STYLE: Minimalist vector stencil, bold solid black lines on white. 
-                             IMPORTANT: ABSOLUTELY NO GRAY, NO SHADING, NO HATCHING. Only solid black shapes.
-                             Keep the black background exactly as is.`,
+                             STYLE: Vintage monochrome vector badge, outdoor adventure sticker style.
+                             visuals: Bold black lines, white negative space, solid shapes. 
+                             REFERENCE STYLE: thick outlines, woodcut aesthetic, flat design.
+                             FORBIDDEN: grey, shading, noise, distress textures, realism.`,
                     image_input: [maskImage],
                     aspect_ratio: "match_input_image",
                     output_format: "png"
