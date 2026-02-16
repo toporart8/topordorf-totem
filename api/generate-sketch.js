@@ -3,14 +3,6 @@ import Replicate from "replicate";
 import fs from "fs";
 import path from "path";
 
-export const config = {
-    api: {
-        bodyParser: {
-            sizeLimit: '4mb',
-        },
-    },
-};
-
 export default async function handler(req, res) {
     if (req.method !== "POST") {
         return res.status(405).json({ error: "Method not allowed" });
@@ -31,22 +23,28 @@ export default async function handler(req, res) {
             auth: process.env.REPLICATE_API_TOKEN,
         });
 
+        // 1. Читаем маску
+        // ВАЖНО: Убедись, что файл mask.png лежит в папке public
         const maskPath = path.join(process.cwd(), 'public', 'mask.png');
 
+        // Проверка на случай, если файла нет
         if (!fs.existsSync(maskPath)) {
-            throw new Error("Mask file not found at public/mask.png");
+            console.error("Mask file not found at:", maskPath);
+            return res.status(500).json({ error: "Server Error: Mask file not found" });
         }
 
         const maskBuffer = fs.readFileSync(maskPath);
         const maskDataURI = `data:image/png;base64,${maskBuffer.toString('base64')}`;
 
+        // 2. Промт
         const stylePrompt = "black and white vector line art, engraving style, sharp thick lines, stencil, monochrome, no shading, minimal detail, white background, centered composition";
         const finalPrompt = `${stylePrompt}, ${prompt}`;
 
         console.log("Sending request to Replicate...");
 
+        // 3. Отправляем задачу (ИСПРАВЛЕННАЯ МОДЕЛЬ)
         const output = await replicate.run(
-            "diffusers/stable-diffusion-xl-inpainting-1.0",
+            "stability-ai/stable-diffusion-inpainting:95b7223104132402a9ae91cc677285bc5eb997834bd2349fa486f53910fd595c",
             {
                 input: {
                     prompt: finalPrompt,
@@ -64,11 +62,11 @@ export default async function handler(req, res) {
         console.log("Replicate output:", output);
 
         const imageUrl = Array.isArray(output) ? output[0] : output;
-
         res.status(200).json({ image: imageUrl });
 
     } catch (error) {
         console.error("Error generating sketch:", error);
+        // Выводим полный текст ошибки, чтобы видеть детали
         res.status(500).json({ error: error.message || "Failed to generate sketch" });
     }
 }
