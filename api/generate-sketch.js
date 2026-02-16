@@ -9,26 +9,26 @@ export default async function handler(req, res) {
     if (req.method === "POST") {
         const { prompt, maskImage } = req.body;
         try {
-            // 1. Gemini Flash (Бесплатно) проектирует эскиз
-            const textModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-            const aiInstruction = `You are a professional axe engraving designer. 
-            Translate and expand this request: "${prompt}". 
+            // 1. Используем более точное имя модели, чтобы не было 404
+            // gemini-1.5-flash-latest - это алиас для использования последней версии
+            const textModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+
+            const aiInstruction = `You are a professional axe engraving designer for "ToporDorf". 
+            Expand this request: "${prompt}". 
             Style: Bold black and white vector line art for plotter cutting. 
-            Requirements: No shading, no gray, high contrast. 
-            Composition: Fill the axe head shape entirely.`;
+            No shading, no gray. The design must fit the axe head shape.`;
 
             const geminiResult = await textModel.generateContent(aiInstruction);
             const smartPrompt = geminiResult.response.text();
             console.log("Gemini Smart Prompt:", smartPrompt);
 
-            // 2. Replicate рисует, используя твои $2.00
+            // 2. Рисуем через Replicate (используем твои $2)
             const prediction = await replicate.predictions.create({
-                // Используем проверенный хэш версии (Stable Diffusion Inpainting) - ...fd68b3
-                // Хэш из примера (...595c) заменен на стабильный во избежание ошибок
+                // Using the specific proven hash ...fd68b3 to ensure stability
                 version: "95b7223104132402a9ae91cc677285bc5eb997834bd2349fa486f53910fd68b3",
                 input: {
                     prompt: smartPrompt,
-                    negative_prompt: "photo, shading, gradient, blurry, grey, thin lines",
+                    negative_prompt: "color, photo, shading, realistic, gradient, blurry, grey, thin lines",
                     image: maskImage,
                     mask: maskImage,
                     num_inference_steps: 30,
