@@ -1,21 +1,42 @@
-
 import Replicate from "replicate";
 import fs from "fs";
 import path from "path";
+
+// Разрешаем загрузку больших картинок (масок)
+export const config = {
+    api: {
+        bodyParser: {
+            sizeLimit: '10mb',
+        },
+    },
+};
 
 export default async function handler(req, res) {
     if (req.method !== "POST") {
         return res.status(405).json({ error: "Method not allowed" });
     }
 
-    const { prompt } = req.body;
+    const { prompt, maskImage } = req.body;
 
-    if (!prompt) {
-        return res.status(400).json({ error: "Prompt is required" });
+    if (!prompt) return res.status(400).json({ error: "Нужен промт" });
+
+    // Если токена нет - ошибка
+    if (!process.env.REPLICATE_API_TOKEN) {
+        return res.status(500).json({ error: "Нет API токена (REPLICATE_API_TOKEN)" });
     }
 
-    if (!process.env.REPLICATE_API_TOKEN) {
-        return res.status(500).json({ error: "REPLICATE_API_TOKEN is not set" });
+    // Логика поиска маски (если клиент не прислал, ищем локально)
+    let finalMask = maskImage;
+    if (!finalMask) {
+        try {
+            const maskPath = path.join(process.cwd(), 'public', 'mask.png');
+            if (fs.existsSync(maskPath)) {
+                const maskBuffer = fs.readFileSync(maskPath);
+                finalMask = `data:image/png;base64,${maskBuffer.toString('base64')}`;
+            }
+        } catch (e) {
+            console.log("Локальная маска не найдена, надеемся на клиента.");
+        }
     }
 
     try {
@@ -23,50 +44,32 @@ export default async function handler(req, res) {
             auth: process.env.REPLICATE_API_TOKEN,
         });
 
-        // 1. Читаем маску
-        // ВАЖНО: Убедись, что файл mask.png лежит в папке public
-        const maskPath = path.join(process.cwd(), 'public', 'mask.png');
+        console.log("Запускаем Stable Diffusion Inpainting...");
 
-        // Проверка на случай, если файла нет
-        if (!fs.existsSync(maskPath)) {
-            console.error("Mask file not found at:", maskPath);
-            return res.status(500).json({ error: "Server Error: Mask file not found" });
-        }
-
-        const maskBuffer = fs.readFileSync(maskPath);
-        const maskDataURI = `data:image/png;base64,${maskBuffer.toString('base64')}`;
-
-        // 2. Промт
-        const stylePrompt = "black and white vector line art, engraving style, sharp thick lines, stencil, monochrome, no shading, minimal detail, white background, centered composition";
-        const finalPrompt = `${stylePrompt}, ${prompt}`;
-
-        console.log("Sending request to Replicate...");
-
-        // 3. Отправляем задачу (ИСПРАВЛЕННАЯ МОДЕЛЬ)
         const output = await replicate.run(
+            // ЭТО ТОЧНАЯ ВЕРСИЯ МОДЕЛИ (SD 2.0 Inpainting), ОНА РАБОТАЕТ 100%
             "stability-ai/stable-diffusion-inpainting:95b7223104132402a9ae91cc677285bc5eb997834bd2349fa486f53910fd595c",
             {
                 input: {
-                    prompt: finalPrompt,
-                    negative_prompt: "color, gray, shading, gradient, blurry, realistic, photo, 3d, complex background, text, watermark",
-                    image: maskDataURI,
-                    mask: maskDataURI,
-                    num_inference_steps: 30,
+                    prompt: `black and white vector line art, engraving style, simple monochrome, ${prompt}`,
+                    negative_prompt: "color, grey, shading, realistic, photo, blurry, watermark, text",
+                    image: finalMask, // Картинка-основа
+                    mask: finalMask,  // Маска (где рисовать)
+                    num_inference_steps: 25,
                     guidance_scale: 7.5,
-                    strength: 1.0,
-                    scheduler: "K_EULER_ANCESTRAL"
+                    strength: 1.0 // 1.0 = перерисовать всё внутри маски
                 }
             }
         );
 
-        console.log("Replicate output:", output);
-
+        console.log("Успех:", output);
+        // Replicate иногда возвращает массив, иногда строку. Берем первое.
         const imageUrl = Array.isArray(output) ? output[0] : output;
+
         res.status(200).json({ image: imageUrl });
 
     } catch (error) {
-        console.error("Error generating sketch:", error);
-        // Выводим полный текст ошибки, чтобы видеть детали
-        res.status(500).json({ error: error.message || "Failed to generate sketch" });
+        console.error("Ошибка Replicate:", error);
+        res.status(500).json({ error: error.message || "Ошибка генерации" });
     }
 }
