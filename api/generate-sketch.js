@@ -27,6 +27,7 @@ export default async function handler(req, res) {
             - STYLE: Vintage Outdoor Badge style, Vector Illustration. 
             - DETAILS: Bold lines, clear shapes, high contrast. 
             - NO shading, NO stippling, NO gradients. Pure Black and White.
+            - TEXT: ABSOLUTELY NO TEXT, NO LETTERS, NO TYPOGRAPHY.
             
             Output ONLY the English prompt description.
         `;
@@ -40,24 +41,23 @@ export default async function handler(req, res) {
             console.error("Gemini Error (using raw prompt):", genError);
         }
 
-        console.log("Step 2: Generating image with Google Nano Banana...");
+        console.log("Step 2: Generating image with FLUX-Fill...");
 
-        // Nano Banana takes 'image_input' as an array
-        // We pass the mask and ask it to fill it
+        // Reverting to FLUX-Fill for strict mask adherence
+        // Now using the improved "Vintage Badge" prompt strategy
         const output = await replicate.run(
-            "google/nano-banana",
+            "black-forest-labs/flux-fill-dev",
             {
                 input: {
-                    prompt: `Transform this image. 
-                             Input is a mask. Draw INSIDE the white area.
-                             CONTENT: ${smartPrompt}.
-                             STYLE: Vintage monochrome vector badge, outdoor adventure sticker style.
-                             visuals: Bold black lines, white negative space, solid shapes. 
-                             REFERENCE STYLE: thick outlines, woodcut aesthetic, flat design.
-                             FORBIDDEN: grey, shading, noise, distress textures, realism.`,
-                    image_input: [maskImage],
-                    aspect_ratio: "match_input_image",
-                    output_format: "png"
+                    prompt: `${smartPrompt}. 
+                             Style: Vintage monochrome vector badge, outdoor adventure sticker style.
+                             Visuals: Bold black lines, white negative space, solid shapes, woodcut aesthetic.
+                             Forbidden tags: text, letters, typography, watermark, shading, gray, noise, realism, color.`,
+                    image: maskImage,
+                    mask: maskImage,
+                    guidance: 12,      // High guidance for style adherence
+                    output_format: "png",
+                    steps: 50
                 }
             }
         );
