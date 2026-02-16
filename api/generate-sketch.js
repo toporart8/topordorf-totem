@@ -2,7 +2,7 @@ import Replicate from "replicate";
 import fs from "fs";
 import path from "path";
 
-// Разрешаем загрузку больших картинок (масок)
+// Разрешаем загрузку больших данных (для маски)
 export const config = {
     api: {
         bodyParser: {
@@ -20,12 +20,12 @@ export default async function handler(req, res) {
 
     if (!prompt) return res.status(400).json({ error: "Нужен промт" });
 
-    // Если токена нет - ошибка
+    // 1. Проверяем Токен
     if (!process.env.REPLICATE_API_TOKEN) {
-        return res.status(500).json({ error: "Нет API токена (REPLICATE_API_TOKEN)" });
+        return res.status(500).json({ error: "Нет API токена. Проверьте .env.local" });
     }
 
-    // Логика поиска маски (если клиент не прислал, ищем локально)
+    // 2. Логика поиска маски
     let finalMask = maskImage;
     if (!finalMask) {
         try {
@@ -35,7 +35,7 @@ export default async function handler(req, res) {
                 finalMask = `data:image/png;base64,${maskBuffer.toString('base64')}`;
             }
         } catch (e) {
-            console.log("Локальная маска не найдена, надеемся на клиента.");
+            console.log("Маска не найдена локально, используем только то, что прислал клиент.");
         }
     }
 
@@ -44,28 +44,29 @@ export default async function handler(req, res) {
             auth: process.env.REPLICATE_API_TOKEN,
         });
 
-        console.log("Запускаем Stable Diffusion Inpainting...");
+        console.log("Отправляем запрос в Replicate...");
 
+        // 3. Запуск генерации
+        // Используем версию: stability-ai/stable-diffusion-inpainting (официальная)
         const output = await replicate.run(
-            // ЭТО ТОЧНАЯ ВЕРСИЯ МОДЕЛИ (SD 2.0 Inpainting), ОНА РАБОТАЕТ 100%
             "stability-ai/stable-diffusion-inpainting:95b7223104132402a9ae91cc677285bc5eb997834bd2349fa486f53910fd595c",
             {
                 input: {
-                    prompt: `black and white vector line art, engraving style, simple monochrome, ${prompt}`,
-                    negative_prompt: "color, grey, shading, realistic, photo, blurry, watermark, text",
-                    image: finalMask, // Картинка-основа
-                    mask: finalMask,  // Маска (где рисовать)
-                    num_inference_steps: 25,
+                    prompt: `black and white vector line art, engraving style, simple monochrome, high contrast, white background, no shading, ${prompt}`,
+                    negative_prompt: "color, grey, shading, realistic, photo, blurry, watermark, text, bad quality, soft lines, gradient",
+                    image: finalMask, // На этой картинке рисуем
+                    mask: finalMask,  // В этой области рисуем
+                    num_inference_steps: 30, // Качество повыше
                     guidance_scale: 7.5,
-                    strength: 1.0 // 1.0 = перерисовать всё внутри маски
+                    strength: 1.0 // Полная перерисовка
                 }
             }
         );
 
-        console.log("Успех:", output);
-        // Replicate иногда возвращает массив, иногда строку. Берем первое.
-        const imageUrl = Array.isArray(output) ? output[0] : output;
+        console.log("Готово:", output);
 
+        // Replicate возвращает массив, берем первую картинку
+        const imageUrl = Array.isArray(output) ? output[0] : output;
         res.status(200).json({ image: imageUrl });
 
     } catch (error) {
