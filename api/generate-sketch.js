@@ -23,9 +23,9 @@ export default async function handler(req, res) {
                              Style: clean graphics, bold and clear closed contours, optimized for vinyl plotter cutting. 
                              ABSOLUTELY FORBIDDEN: shadows, gradients, gray spots, halftones or thin broken lines. 
                              Only absolutely black color on a pure white background.`,
-                    image: maskImage,  // Используем маску как основу 
-                    mask: maskImage,   // И как маску области рисования
-                    guidance: 30,      // Высокое значение для строгого следования промпту
+                    image: maskImage,
+                    mask: maskImage,
+                    guidance: 7.5,      // Standard guidance for FLUX (was 30, too high)
                     output_format: "png",
                     steps: 50          // Качество > Скорость
                 }
