@@ -105,19 +105,24 @@ const SketchGenerator = () => {
                             src={resultImage}
                             alt="Sketch"
                             className="w-full h-auto block"
+                            style={{
+                                maskImage: 'url(/mask.png)',
+                                WebkitMaskImage: 'url(/mask.png)',
+                                maskMode: 'alpha',
+                                WebkitMaskMode: 'alpha',
+                                maskRepeat: 'no-repeat',
+                                WebkitMaskRepeat: 'no-repeat',
+                                maskSize: 'contain',
+                                WebkitMaskSize: 'contain'
+                            }}
                             onError={(e) => {
                                 e.target.style.display = 'none';
                                 alert("Не удалось загрузить картинку: " + resultImage);
                             }}
                         />
-                        {/* Mask Overlay for better visibility of boundaries */}
+                        {/* Mask Overlay (Optional, for visual debugging/border) */}
                         <div
-                            className="absolute top-0 left-0 w-full h-full pointer-events-none"
-                            style={{
-                                backgroundImage: 'url(/mask.png)',
-                                backgroundSize: 'cover',
-                                opacity: 0.5
-                            }}
+                            className="absolute top-0 left-0 w-full h-full pointer-events-none border-2 border-zinc-800 rounded-lg"
                         ></div>
                     </div>
                     {/* DEBUG: Show raw URL only if it's short, base64 is too long */}

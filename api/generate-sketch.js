@@ -41,23 +41,23 @@ export default async function handler(req, res) {
             console.error("Gemini Error (using raw prompt):", genError);
         }
 
-        console.log("Step 2: Generating image with FLUX-Fill...");
+        console.log("Step 2: Generating image with Google Nano Banana...");
 
-        // Reverting to FLUX-Fill for strict mask adherence
-        // Now using the improved "Vintage Badge" prompt strategy
+        // Nano Banana for superior style
         const output = await replicate.run(
-            "black-forest-labs/flux-fill-dev",
+            "google/nano-banana",
             {
                 input: {
-                    prompt: `${smartPrompt}. 
-                             Style: Vintage monochrome vector badge, outdoor adventure sticker style.
-                             Visuals: Bold black lines, white negative space, solid shapes, woodcut aesthetic.
-                             Forbidden tags: text, letters, typography, watermark, shading, gray, noise, realism, color.`,
-                    image: maskImage,
-                    mask: maskImage,
-                    guidance: 12,      // High guidance for style adherence
-                    output_format: "png",
-                    steps: 50
+                    prompt: `Transform this image. 
+                             Input is a mask. Draw INSIDE the white area.
+                             CONTENT: ${smartPrompt}.
+                             STYLE: Vintage monochrome vector badge, outdoor adventure sticker style.
+                             visuals: Bold black lines, white negative space, solid shapes, woodcut aesthetic.
+                             FORBIDDEN: TEXT, LETTERS, TYPOGRAPHY, WATERMARK, grey, shading, noise, realism.
+                             IMPORTANT: Draw only the graphic. Do not add any text labels.`,
+                    image_input: [maskImage],
+                    aspect_ratio: "match_input_image",
+                    output_format: "png"
                 }
             }
         );
