@@ -15,11 +15,17 @@ export default async function handler(req, res) {
                 // Используем проверенный хэш версии (Stable Diffusion Inpainting)
                 version: "95b7223104132402a9ae91cc677285bc5eb997834bd2349fa486f53910fd68b3",
                 input: {
-                    prompt: systemPrompt + prompt,
-                    negative_prompt: "color, photo, shading, realistic, gradient, blurry, grey, soft lines",
+                    // Усиливаем акцент на заполнении всей формы
+                    prompt: `High-contrast black and white stencil art, bold lines for vinyl cutting. 
+                             TOP PART: large stylized ${prompt} zodiac sign. 
+                             BOTTOM PART: traditional Slavic Hall (Chertog) symbol. 
+                             The design must fill the entire white area of the mask. 
+                             No gray areas, no shading, clean thick black lines on white background.`,
+                    negative_prompt: "thin lines, gray, tiny details, photo, complex, realistic, shading, gradient, blurry, outside of borders",
                     image: maskImage,
                     mask: maskImage,
-                    num_inference_steps: 25,
+                    num_inference_steps: 35, // Чуть больше шагов для четкости
+                    guidance_scale: 9.0,      // Делаем нейросеть более "послушной" промпту
                     strength: 1.0
                 },
             });

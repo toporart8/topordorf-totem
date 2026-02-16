@@ -143,6 +143,15 @@ const SketchGenerator = () => {
                                 alert("Не удалось загрузить картинку: " + resultImage);
                             }}
                         />
+                        {/* Mask Overlay for better visibility of boundaries */}
+                        <div
+                            className="absolute top-0 left-0 w-full h-full pointer-events-none"
+                            style={{
+                                backgroundImage: 'url(/mask.png)',
+                                backgroundSize: 'cover',
+                                opacity: 0.5
+                            }}
+                        ></div>
                     </div>
                     {/* DEBUG: Show raw URL */}
                     <p className="text-[10px] text-zinc-600 mt-2 break-all font-mono select-all bg-zinc-900 p-2 rounded">{JSON.stringify(resultImage)}</p>
