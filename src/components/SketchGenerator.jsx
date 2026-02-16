@@ -10,22 +10,19 @@ const SketchGenerator = () => {
 
     const generateSketch = async () => {
         if (!prompt) {
-            alert('Опишите идею эскиза!');
+            alert('Опишите идею!');
             return;
         }
 
         setLoading(true);
-        setLoadingMessage("Gemini создает эскиз...");
+        setLoadingMessage("Gemini проектирует эскиз...");
         setError(null);
         setResultImage(null);
 
         try {
-            // Запрос к серверу (прямой, без polling)
             const response = await fetch('/api/generate-sketch', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ prompt }),
             });
 
