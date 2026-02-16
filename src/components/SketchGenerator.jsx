@@ -88,8 +88,14 @@ const SketchGenerator = () => {
                             src={resultImage}
                             alt="Sketch"
                             className="w-full h-auto block"
+                            onError={(e) => {
+                                e.target.style.display = 'none';
+                                alert("Не удалось загрузить картинку: " + resultImage);
+                            }}
                         />
                     </div>
+                    {/* DEBUG: Show raw URL */}
+                    <p className="text-[10px] text-zinc-600 mt-2 break-all font-mono select-all bg-zinc-900 p-2 rounded">{JSON.stringify(resultImage)}</p>
 
                     <div className="mt-6">
                         <button
