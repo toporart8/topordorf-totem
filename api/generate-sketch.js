@@ -39,24 +39,23 @@ export default async function handler(req, res) {
             console.error("Gemini Error (using raw prompt):", genError);
         }
 
-        console.log("Step 2: Generating image with FLUX-Fill...");
+        console.log("Step 2: Generating image with Google Nano Banana...");
 
-        // Используем FLUX-Fill-Dev для точного соблюдения маски
-        // Модель требует image и mask. В нашем случае:
-        // image - это исходное изображение (мы подаем маску как базу, чтобы он рисовал в ней)
-        // mask - это сама маска (белое - где рисовать, черное - где сохранять)
+        // Nano Banana takes 'image_input' as an array
+        // We pass the mask and ask it to fill it
         const output = await replicate.run(
-            "black-forest-labs/flux-fill-dev",
+            "google/nano-banana",
             {
                 input: {
-                    prompt: `${smartPrompt}. 
-                             Style: Professional vector stencil, black ink on white paper, hard edges, engraving style, high contrast. 
-                             Forbidden: blurred, gray, shading, photorealistic.`,
-                    image: maskImage,
-                    mask: maskImage,
-                    guidance: 12,
-                    output_format: "png",
-                    steps: 50
+                    prompt: `Transform this image. 
+                             The input is a black and white mask of an axe head. 
+                             Your task is to DRAW INSIDE the white area.
+                             CONTENT: ${smartPrompt}.
+                             STYLE: Intricate black and white engraving, vector stencil, woodcut. 
+                             IMPORTANT: Keep the black background exactly as is. Only fill the white shape.`,
+                    image_input: [maskImage],
+                    aspect_ratio: "match_input_image", // Ensure output matches mask dimensions
+                    output_format: "png"
                 }
             }
         );
