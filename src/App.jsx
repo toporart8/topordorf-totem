@@ -4,6 +4,7 @@ import DateInput from './components/DateInput';
 import DailyOracle from './components/DailyOracle';
 import { getSlavicHall, getZoroastrianTotem, getZodiac } from './utils/logic';
 import { products, categories } from './utils/products';
+import SketchGenerator from './components/SketchGenerator';
 
 
 const CONTACTS = {
@@ -466,6 +467,8 @@ function App() {
           )}
         </AnimatePresence>
       </div >
+
+      <SketchGenerator />
 
       {/* Footer: Подписка и Отзывы */}
       <div className="w-full max-w-2xl mt-12 space-y-8">
