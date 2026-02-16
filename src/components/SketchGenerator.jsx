@@ -18,23 +18,53 @@ const SketchGenerator = () => {
         setResultImage(null);
 
         try {
+            // 1. Готовим маску (Client-side fetch)
+            const maskResponse = await fetch('/mask.png');
+            if (!maskResponse.ok) throw new Error("Не удалось загрузить маску (mask.png)");
+
+            const maskBlob = await maskResponse.blob();
+            const reader = new FileReader();
+            const maskBase64 = await new Promise((resolve) => {
+                reader.onloadend = () => resolve(reader.result);
+                reader.readAsDataURL(maskBlob);
+            });
+
+            // 2. Запрос к серверу
             const response = await fetch('/api/generate-sketch', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ prompt }),
+                body: JSON.stringify({ prompt, maskImage: maskBase64 }),
             });
 
             const data = await response.json();
+            console.log("Данные от сервера:", data);
 
-            if (!response.ok) {
+            if (data.error) {
                 throw new Error(data.error || 'Ошибка сервера');
             }
 
-            setResultImage(data.image);
+            // --- ИСПРАВЛЕННЫЙ БЛОК ВЫБОРА ССЫЛКИ ---
+            let finalImageUrl = "";
+
+            if (typeof data.image === 'string') {
+                finalImageUrl = data.image; // Если пришла просто строка
+            } else if (Array.isArray(data.image)) {
+                finalImageUrl = data.image[0]; // Если пришел массив ссылок
+            } else if (data.image && data.image.url) {
+                finalImageUrl = data.image.url; // Если пришел объект с полем url
+            }
+
+            if (finalImageUrl) {
+                console.log("Устанавливаем URL картинки:", finalImageUrl);
+                setResultImage(finalImageUrl);
+            } else {
+                throw new Error("Сервер не вернул прямую ссылку на изображение. Проверьте консоль.");
+            }
+
         } catch (err) {
-            console.error(err);
+            console.error("Ошибка во время генерации:", err);
             setError(err.message || "Ошибка генерации");
         } finally {
             setLoading(false);
