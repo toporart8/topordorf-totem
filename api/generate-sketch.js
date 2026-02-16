@@ -18,16 +18,15 @@ export default async function handler(req, res) {
             "black-forest-labs/flux-fill-dev",
             {
                 input: {
-                    prompt: `Professional black and white vector stencil for axe blade engraving. 
-                             Subject: ${prompt}.
-                             Style: clean graphics, bold and clear closed contours, optimized for vinyl plotter cutting. 
-                             ABSOLUTELY FORBIDDEN: shadows, gradients, gray spots, halftones or thin broken lines. 
-                             Only absolutely black color on a pure white background.`,
+                    prompt: `${prompt}. 
+                             Style: Professional black and white vector stencil. 
+                             High contrast, clean solid lines, white background. 
+                             No shading, no gradients, no grey colors.`,
                     image: maskImage,
                     mask: maskImage,
-                    guidance: 7.5,      // Standard guidance for FLUX (was 30, too high)
+                    guidance: 12,      // Slightly higher guidance to enforce 'Fishing' topic
                     output_format: "png",
-                    steps: 50          // Качество > Скорость
+                    steps: 50
                 }
             }
         );
