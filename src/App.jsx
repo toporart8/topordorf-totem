@@ -626,30 +626,32 @@ function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[80] flex items-start md:items-center justify-center p-4 bg-black/95 backdrop-blur-md overflow-y-auto"
+            className="fixed inset-0 z-[80] overflow-y-auto bg-black/95 backdrop-blur-md"
             onClick={() => setIsSketchOpen(false)}
           >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-4xl relative my-8 md:my-0"
-            >
-              <button
-                onClick={() => setIsSketchOpen(false)}
-                className="absolute -top-12 right-0 text-zinc-500 hover:text-white transition-colors flex items-center gap-2 uppercase text-xs font-bold tracking-widest"
+            <div className="flex min-h-full items-start md:items-center justify-center p-4">
+              <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                onClick={(e) => e.stopPropagation()}
+                className="w-full max-w-4xl relative my-8 md:my-0"
               >
-                Закрыть
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+                <button
+                  onClick={() => setIsSketchOpen(false)}
+                  className="absolute -top-12 right-0 text-zinc-500 hover:text-white transition-colors flex items-center gap-2 uppercase text-xs font-bold tracking-widest"
+                >
+                  Закрыть
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
 
-              <div className="bg-black border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl">
-                <SketchGenerator usageLimit={promoUseLimit} />
-              </div>
-            </motion.div>
+                <div className="bg-black border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl">
+                  <SketchGenerator usageLimit={promoUseLimit} />
+                </div>
+              </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
