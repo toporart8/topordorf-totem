@@ -7,7 +7,7 @@ export default async function handler(req, res) {
 
     if (req.method !== "POST") return res.status(405).send("Method not allowed");
 
-    const { prompt, maskImage } = req.body;
+    const { prompt, avoid, maskImage } = req.body;
 
     try {
         console.log("Step 1: Expanding prompt with Gemini...");
@@ -20,7 +20,6 @@ export default async function handler(req, res) {
             
             Task: Create a highly detailed visual description for a black and white vector stencil.
             
-            Guidelines:
             Guidelines:
             - SUBJECT: Based strictly on the User Input ("${prompt}").
             - COMPOSITION: Full scene filling the vertical space. 
@@ -43,6 +42,10 @@ export default async function handler(req, res) {
 
         console.log("Step 2: Generating image with Google Nano Banana...");
 
+        // Construct FORBIDDEN list, appending user's avoids
+        const forbiddenList = "TEXT, LETTERS, TYPOGRAPHY, WATERMARK, grey, shading, noise, realism, scratchy lines, messy hatching";
+        const userAvoids = avoid ? `, ${avoid}` : "";
+
         // Nano Banana for superior style
         const output = await replicate.run(
             "google/nano-banana",
@@ -54,7 +57,7 @@ export default async function handler(req, res) {
                              STYLE: Vintage vector illustration, clean woodcut aesthetic.
                              visuals: Bold black lines, decorative patterns, folklore ornaments, balanced details.
                              COMPOSITION: Symmetric or scenic design, filling the shape.
-                             FORBIDDEN: TEXT, LETTERS, TYPOGRAPHY, WATERMARK, grey, shading, noise, realism, scratchy lines, messy hatching.
+                             FORBIDDEN: ${forbiddenList}${userAvoids}.
                              IMPORTANT: Draw only the graphic. Do not add any text labels.`,
                     image_input: [maskImage],
                     aspect_ratio: "match_input_image",

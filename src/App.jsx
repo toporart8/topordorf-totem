@@ -41,7 +41,47 @@ function App() {
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [isOracleOpen, setIsOracleOpen] = useState(false);
   const [isLegendOpen, setIsLegendOpen] = useState(false);
+  const [isSketchOpen, setIsSketchOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState(null);
+
+  // Promo Code State
+  const [isPromoModalOpen, setIsPromoModalOpen] = useState(false);
+  const [promoCode, setPromoCode] = useState('');
+  const [promoError, setPromoError] = useState(false);
+  const [promoUseLimit, setPromoUseLimit] = useState(null); // null = unlimited, number = daily limit
+
+  const handlePromoSubmit = async () => {
+    const code = promoCode.trim().toLowerCase();
+
+    // Hash the input
+    const encoder = new TextEncoder();
+    const data = encoder.encode(code);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+    // Hashes
+    const secretHash = "40d613f5ec9f4b2f5cd565306bb912de486ea9884a11bbdadd076c89c2c63671"; // сисяо
+    const limitedHash = "563dcc6b20b1bcb2a3806266aec9729a5fd1f8261f9b1b4e2b8062ee2bb702e6"; // горн
+
+    if (hashHex === secretHash) {
+      // Unlimited access
+      setPromoUseLimit(null);
+      setIsPromoModalOpen(false);
+      setIsSketchOpen(true);
+      setPromoCode('');
+      setPromoError(false);
+    } else if (hashHex === limitedHash) {
+      // Limited access (5 per day)
+      setPromoUseLimit(5);
+      setIsPromoModalOpen(false);
+      setIsSketchOpen(true);
+      setPromoCode('');
+      setPromoError(false);
+    } else {
+      setPromoError(true);
+    }
+  };
 
   const findProduct = (slavicData, zoroData) => {
     // Нормализация строк для поиска (нижний регистр)
@@ -468,7 +508,151 @@ function App() {
         </AnimatePresence>
       </div >
 
-      <SketchGenerator />
+      {/* Кнопка открытия Мастерской Эскизов */}
+      <div className="w-full max-w-md my-8">
+        <button
+          onClick={() => setIsPromoModalOpen(true)}
+          className="w-full relative group overflow-hidden rounded-xl border border-zinc-700 hover:border-orange-500 transition-all duration-500 shadow-2xl"
+        >
+          <div className="absolute inset-0">
+            <img
+              src="/images/oracle_bg.png"
+              alt=""
+              className="w-full h-full object-cover opacity-20 group-hover:opacity-30 transition-opacity duration-500 scale-100 group-hover:scale-110"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+          </div>
+
+          <div className="relative z-10 p-8 text-center">
+            <h2 className="text-2xl font-serif text-white uppercase tracking-widest mb-2 group-hover:text-orange-500 transition-colors">
+              Мастерская Эскизов
+            </h2>
+            <p className="text-zinc-400 text-xs uppercase tracking-wider mb-6 group-hover:text-zinc-300 transition-colors">
+              Создай свой уникальный дизайн для топора
+            </p>
+
+            <div className="inline-flex items-center gap-2 px-6 py-2 border border-zinc-600 rounded-full text-xs font-bold uppercase tracking-widest text-zinc-300 group-hover:bg-orange-500 group-hover:border-orange-500 group-hover:text-white transition-all">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.077-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.048 4.053a15.971 15.971 0 01-2.429-2.28m2.43 2.28l1.638-1.802m0 0a1.125 1.125 0 010-1.606l8.834-8.835a2.25 2.25 0 013.182 0l1.24 1.24a2.25 2.25 0 010 3.182l-8.835 8.834a1.125 1.125 0 01-1.606 0l-1.802 1.639" />
+              </svg>
+              Открыть Генератор
+            </div>
+          </div>
+        </button>
+      </div>
+
+      {/* Promo Code Modal */}
+      <AnimatePresence>
+        {isPromoModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm"
+            onClick={() => setIsPromoModalOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-zinc-900 border border-zinc-700 p-8 rounded-xl w-full max-w-md shadow-2xl text-center relative overflow-hidden"
+            >
+              {/* Background Decoration */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-5">
+                <img src="/images/oracle_bg.png" alt="" className="w-full h-full object-contain" />
+              </div>
+
+              <div className="relative z-10">
+                <h3 className="text-xl font-bold text-white uppercase tracking-widest mb-6">
+                  Доступ к Мастерской
+                </h3>
+
+                {!promoError ? (
+                  <>
+                    <p className="text-zinc-400 text-sm mb-4">
+                      Введите секретный код доступа, чтобы открыть генератор.
+                    </p>
+                    <input
+                      type="text"
+                      value={promoCode}
+                      onChange={(e) => setPromoCode(e.target.value)}
+                      placeholder="Введите код"
+                      className="w-full bg-black border border-zinc-700 p-3 text-center text-white focus:border-orange-500 outline-none transition-colors rounded mb-4"
+                      autoFocus
+                    />
+                    <button
+                      onClick={handlePromoSubmit}
+                      className="w-full py-3 bg-orange-600 hover:bg-orange-700 text-white font-bold uppercase rounded transition-all shadow-lg hover:shadow-orange-500/20"
+                    >
+                      Войти
+                    </button>
+                  </>
+                ) : (
+                  <div className="animate-shake">
+                    <p className="text-red-500 font-bold mb-2">Неверный код!</p>
+                    <p className="text-zinc-400 text-sm mb-6">
+                      Для получения кода обратитесь к Мастеру.
+                    </p>
+
+                    <a
+                      href={CONTACTS.telegram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block w-full py-3 bg-[#229ED9] hover:bg-[#1E8BBF] text-white font-bold uppercase rounded transition-all mb-3 flex items-center justify-center gap-2"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.48-1.02-2.38-1.63-1.05-.69-.37-1.07.23-1.68.15-.15 2.81-2.57 2.86-2.79.01-.05.01-.1-.02-.14-.03-.04-.08-.06-.11-.04-.08.02-1.29.82-3.64 2.41-.34.23-.66.35-.97.35-.32-.01-.94-.18-1.4-.33-.56-.18-1.01-.28-1.04-.58.02-.16.24-.32.65-.49 2.54-1.1 4.23-1.84 5.08-2.19 2.42-.99 2.92-1.16 3.25-1.16.07 0 .23.01.33.09.09.07.12.17.12.27 0 .1 0 .2-.01.24z" /></svg>
+                      Написать Мастеру
+                    </a>
+
+                    <button
+                      onClick={() => { setPromoError(false); setPromoCode(''); }}
+                      className="text-zinc-500 text-xs uppercase hover:text-white transition-colors border-b border-transparent hover:border-white"
+                    >
+                      Попробовать снова
+                    </button>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+
+      <AnimatePresence>
+        {isSketchOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md overflow-y-auto"
+            onClick={() => setIsSketchOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-4xl relative"
+            >
+              <button
+                onClick={() => setIsSketchOpen(false)}
+                className="absolute -top-12 right-0 text-zinc-500 hover:text-white transition-colors flex items-center gap-2 uppercase text-xs font-bold tracking-widest"
+              >
+                Закрыть
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+
+              <div className="bg-black border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl">
+                <SketchGenerator usageLimit={promoUseLimit} />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Footer: Подписка и Отзывы */}
       <div className="w-full max-w-2xl mt-12 space-y-8">
