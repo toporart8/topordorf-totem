@@ -14,11 +14,40 @@ export const PRODUCTS_DB = [
 
 // 2. Праздники (Месяц-День)
 export const HOLIDAYS_DB = [
-    { date: "02-23", name: "День защитника Отечества", type: "male", tags: ["axes", "amulets"] },
-    { date: "03-08", name: "Международный женский день", type: "female", tags: ["idols", "decor"] },
-    { date: "03-20", name: "Комоедица (Масленица)", type: "general", tags: ["idols", "amulets", "decor"] },
-    { date: "05-05", name: "Светлая Пасха", type: "general", tags: ["decor"] }, // Дата меняется, для примера
-    { date: "06-21", name: "Купала (Летнее солнцестояние)", type: "general", tags: ["amulets", "idols"] }
+    // --- ЗИМА ---
+    { date: "01-01", name: "Новый Год", type: "general", tags: ["amulets", "decor", "idols"], desc: "Время начинать новую жизнь." },
+    { date: "01-07", name: "Рождество / Коляда", type: "general", tags: ["idols", "amulets"], desc: "Светлый праздник для всей семьи." },
+    { date: "01-19", name: "Водокрес", type: "general", tags: ["amulets"], desc: "Время очищения и силы." },
+    { date: "02-11", name: "Велесов День", type: "male", tags: ["idols", "axes"], desc: "Покровитель мудрости и богатства." },
+    { date: "02-14", name: "День всех влюбленных", type: "general", tags: ["amulets", "decor"], desc: "Парные подарки и знаки внимания." },
+    { date: "02-23", name: "День Защитника Отечества", type: "male", tags: ["axes", "idols"], desc: "Главный мужской праздник." },
+
+    // --- ВЕСНА ---
+    { date: "03-08", name: "Международный женский день", type: "female", tags: ["idols", "decor"], desc: "Подарки для прекрасных дам." },
+    { date: "03-20", name: "Комоедица (Равноденствие)", type: "general", tags: ["idols", "decor"], desc: "Встреча весны и солнца." },
+    { date: "04-06", name: "День Русской Нации", type: "general", tags: ["axes", "amulets"], desc: "Сила традиций." },
+    { date: "05-01", name: "Живин День (Праздник Жизни)", type: "female", tags: ["amulets", "idols"], desc: "Время плодородия и любви." },
+    { date: "05-06", name: "День Даждьбога", type: "male", tags: ["idols", "axes"], desc: "Покровитель воинов и света." },
+    { date: "05-09", name: "День Победы", type: "general", tags: ["axes", "amulets"], desc: "Память предков." },
+
+    // --- ЛЕТО ---
+    { date: "06-21", name: "Купала (Солнцестояние)", type: "general", tags: ["amulets", "idols"], desc: "Самый мистический день года." },
+    { date: "07-08", name: "День Семьи, Любви и Верности", type: "general", tags: ["decor", "idols"], desc: "Домашний уют и обереги." },
+    { date: "07-20", name: "Пернов День (Праздник Перуна)", type: "male", tags: ["axes", "idols"], desc: "День воинов и громовержца. Топоры!" },
+    { date: "08-02", name: "День ВДВ / Ильин День", type: "male", tags: ["axes"], desc: "Для настоящих мужчин." },
+    { date: "08-18", name: "Хорояр (Праздник лошадей)", type: "male", tags: ["amulets", "decor"], desc: "Для тех, кто в пути." },
+
+    // --- ОСЕНЬ ---
+    { date: "09-03", name: "День Бороды", type: "male", tags: ["axes", "amulets"], desc: "Брутальный праздник." },
+    { date: "09-21", name: "День Сварога / Осенины", type: "male", tags: ["axes", "idols"], desc: "Покровитель ремесла и кузни." },
+    { date: "10-14", name: "Покров", type: "female", tags: ["decor", "amulets"], desc: "Хранительницам очага." },
+    { date: "10-31", name: "Велесова ночь / Самайн", type: "general", tags: ["idols", "amulets"], desc: "Ночь чародейства." },
+    { date: "11-14", name: "День Кузнеца (Кузьминки)", type: "male", tags: ["axes"], desc: "Профессиональный праздник мастерской!" },
+    { date: "11-24", name: "День Матери", type: "female", tags: ["decor", "idols"], desc: "Подарок самому близкому человеку." },
+
+    // --- ЗИМА (декабрь) ---
+    { date: "12-04", name: "Введение (Праздник зимы)", type: "general", tags: ["decor"], desc: "Подготовка к холодам." },
+    { date: "12-21", name: "Карачун (Зимнее солнцестояние)", type: "male", tags: ["idols", "amulets"], desc: "Самая длинная ночь. Время оберегов." }
 ];
 
 // --- ЛОГИКА КАЛЕНДАРЯ ---
