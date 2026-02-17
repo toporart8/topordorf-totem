@@ -24,9 +24,9 @@ export default async function handler(req, res) {
             Guidelines:
             - SUBJECT: Based strictly on the User Input ("${prompt}").
             - COMPOSITION: Full scene filling the vertical space. 
-            - STYLE: Vintage Poster, Bold Sticker Art, Vector Illustration.
-            - DETAILS: Thick outlines, clean solid shapes, flat areas. NOT too intricate, NO tiny hatching.
-            - MOOD: Folk art, Linocut, Bold Graphic.
+            - STYLE: Folklore Woodcut, Vintage Sticker Art, Detailed Vector.
+            - DETAILS: Bold outlines with moderate internal details. Decorative patterns, ornamental borders.
+            - MOOD: Mythological, Symbolic, Ancient.
             - TEXT: ABSOLUTELY NO TEXT, NO LETTERS.
             
             Output ONLY the English prompt description.
@@ -51,10 +51,10 @@ export default async function handler(req, res) {
                     prompt: `Transform this image. 
                              Input is a mask. Draw INSIDE the white area.
                              CONTENT: ${smartPrompt}.
-                             STYLE: Bold vintage vector sticker, smooth linocut style.
-                             visuals: Thick consistent black lines, large white negative spaces, flat vector shapes.
-                             COMPOSITION: Balanced poster design, clear readability.
-                             FORBIDDEN: TEXT, LETTERS, TYPOGRAPHY, WATERMARK, grey, shading, noise, realism, scratchy lines, tiny details, hatching.
+                             STYLE: Vintage vector illustration, clean woodcut aesthetic.
+                             visuals: Bold black lines, decorative patterns, folklore ornaments, balanced details.
+                             COMPOSITION: Symmetric or scenic design, filling the shape.
+                             FORBIDDEN: TEXT, LETTERS, TYPOGRAPHY, WATERMARK, grey, shading, noise, realism, scratchy lines, messy hatching.
                              IMPORTANT: Draw only the graphic. Do not add any text labels.`,
                     image_input: [maskImage],
                     aspect_ratio: "match_input_image",
