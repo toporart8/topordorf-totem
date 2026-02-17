@@ -4,6 +4,7 @@ import DateInput from './components/DateInput';
 import DailyOracle from './components/DailyOracle';
 import { getSlavicHall, getZoroastrianTotem, getZodiac } from './utils/logic';
 import { products, categories } from './utils/products';
+import { getUpcomingHolidays, PRODUCTS_DB } from './utils/holidays';
 import SketchGenerator from './components/SketchGenerator';
 
 
@@ -46,6 +47,20 @@ function App() {
 
   // Maintenance Timer State
   const [maintenanceTime, setMaintenanceTime] = useState(6540); // 1h 49m = 109m * 60s = 6540s
+
+  // Holiday Feature State
+  const [isHolidaysOpen, setIsHolidaysOpen] = useState(false);
+  const [isGiftCatalogOpen, setIsGiftCatalogOpen] = useState(false);
+  const [selectedHolidayName, setSelectedHolidayName] = useState('');
+  const [giftCatalogProducts, setGiftCatalogProducts] = useState([]);
+
+  const handleOpenGiftCatalog = (tags, holidayName) => {
+    const filtered = PRODUCTS_DB.filter(p => tags.includes(p.category));
+    setGiftCatalogProducts(filtered);
+    setSelectedHolidayName(holidayName);
+    setIsHolidaysOpen(false);
+    setIsGiftCatalogOpen(true);
+  };
 
   useEffect(() => {
     // Reset timer on mount (every time user opens/refreshes page)
@@ -529,6 +544,17 @@ function App() {
         </AnimatePresence>
       </div >
 
+      {/* Кнопка "Ближайшие Праздники" */}
+      <div className="w-full max-w-md mb-4 mt-8">
+        <button
+          onClick={() => setIsHolidaysOpen(true)}
+          className="w-full py-4 bg-transparent border border-zinc-500 hover:border-white text-zinc-300 hover:text-white font-bold uppercase tracking-widest transition-all rounded-xl flex items-center justify-center gap-3 backdrop-blur-sm group"
+        >
+          <span className="text-2xl group-hover:scale-110 transition-transform">📅</span>
+          Ближайшие Праздники
+        </button>
+      </div>
+
       {/* Кнопка открытия Мастерской Эскизов */}
       <div className="w-full max-w-md my-8 flex flex-col items-center">
         <button
@@ -773,6 +799,139 @@ function App() {
               >
                 Закрыть
               </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Модальное окно "Праздники" */}
+      <AnimatePresence>
+        {isHolidaysOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md overflow-y-auto"
+            onClick={() => setIsHolidaysOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-md bg-zinc-900 border border-zinc-700 rounded-xl overflow-hidden shadow-2xl relative my-8"
+            >
+              <div className="p-4 border-b border-zinc-800 flex items-center justify-between bg-zinc-900/95 sticky top-0 z-10">
+                <button onClick={() => setIsHolidaysOpen(false)} className="text-zinc-500 hover:text-white transition-colors text-sm uppercase font-bold flex items-center gap-1">
+                  ← Назад
+                </button>
+                <h2 className="text-lg font-bold text-white uppercase tracking-widest">Грядущие События</h2>
+                <div className="w-12"></div>
+              </div>
+
+              <div className="p-4">
+                <div className="mb-4 inline-block px-3 py-1 bg-zinc-800 rounded text-xs text-zinc-400 uppercase tracking-wider">
+                  Ближайшие 30 дней
+                </div>
+
+                <div className="space-y-3">
+                  {getUpcomingHolidays().length > 0 ? (
+                    getUpcomingHolidays().map((h, idx) => (
+                      <div key={idx} className="bg-black/50 border border-zinc-800 p-4 rounded-lg flex flex-col gap-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <span className="text-2xl">
+                              {h.type === 'male' ? '⚔️' : h.type === 'female' ? '🌺' : '🎉'}
+                            </span>
+                            <div>
+                              <span className="text-zinc-500 text-xs font-mono block mb-0.5">{h.displayDate}</span>
+                              <h3 className="text-white font-bold text-sm leading-tight">{h.name}</h3>
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => handleOpenGiftCatalog(h.tags, h.name)}
+                          className="w-full py-2 bg-white hover:bg-zinc-200 text-black font-bold uppercase text-xs rounded transition-colors flex items-center justify-center gap-2"
+                        >
+                          🎁 Подобрать подарок
+                        </button>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-center text-zinc-500 py-8">В ближайшие 30 дней праздников нет. Отдыхайте!</p>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Модальное окно "Подарки к празднику" */}
+      <AnimatePresence>
+        {isGiftCatalogOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[110] flex items-start justify-center p-4 bg-black/95 backdrop-blur-md overflow-y-auto"
+            onClick={() => setIsGiftCatalogOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-2xl bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden mt-8 mb-8 shadow-2xl relative"
+            >
+              {/* Header */}
+              <div className="sticky top-0 bg-zinc-900/95 backdrop-blur z-10 border-b border-zinc-800 p-4 flex items-center justify-between">
+                <button
+                  onClick={() => { setIsGiftCatalogOpen(false); setIsHolidaysOpen(true); }}
+                  className="flex items-center gap-2 text-zinc-500 hover:text-white transition-colors text-sm uppercase tracking-wide font-bold"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                  </svg>
+                  К праздникам
+                </button>
+
+                <h2 className="text-xl font-bold text-white uppercase tracking-widest font-serif truncate max-w-[200px] sm:max-w-none text-center">
+                  Подарки: <span className="text-orange-500">{selectedHolidayName}</span>
+                </h2>
+
+                <button
+                  onClick={() => setIsGiftCatalogOpen(false)}
+                  className="p-2 hover:bg-zinc-800 rounded-full transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-zinc-500 hover:text-white">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="p-6 grid grid-cols-2 md:grid-cols-3 gap-4">
+                {giftCatalogProducts.length > 0 ? (
+                  giftCatalogProducts.map(p => (
+                    <div key={p.id} className="bg-black/40 border border-zinc-800 rounded-lg overflow-hidden flex flex-col items-center hover:border-orange-500/50 transition-colors group">
+                      <div className="aspect-square w-full flex items-center justify-center bg-zinc-900/30 text-6xl mb-2 group-hover:scale-110 transition-transform duration-500">
+                        {p.img}
+                      </div>
+                      <div className="p-4 text-center w-full flex flex-col flex-grow">
+                        <h4 className="text-white font-serif text-sm leading-tight mb-2 flex-grow">{p.name}</h4>
+                        <p className="text-orange-500 font-bold text-sm mb-3">{p.price}</p>
+                        <button className="w-full py-2 border border-zinc-600 hover:border-white text-zinc-300 hover:text-white text-[10px] font-bold uppercase transition-colors rounded">
+                          Заказать
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="col-span-full text-center text-zinc-500 py-12">
+                    Товары для этого праздника скоро появятся.
+                  </div>
+                )}
+              </div>
             </motion.div>
           </motion.div>
         )}
