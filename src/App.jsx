@@ -626,7 +626,7 @@ function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md overflow-y-auto"
+            className="fixed inset-0 z-[80] flex items-start md:items-center justify-center p-4 bg-black/95 backdrop-blur-md overflow-y-auto"
             onClick={() => setIsSketchOpen(false)}
           >
             <motion.div
@@ -634,7 +634,7 @@ function App() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-4xl relative"
+              className="w-full max-w-4xl relative my-8 md:my-0"
             >
               <button
                 onClick={() => setIsSketchOpen(false)}
