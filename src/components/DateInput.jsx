@@ -38,8 +38,8 @@ const DateInput = ({ value, onChange }) => {
         onChange({ ...value, year: val });
     };
 
-    const inputClasses = "w-full bg-black border border-zinc-700 p-3 text-center text-white focus:border-orange-500 outline-none transition-colors rounded text-xl font-bold placeholder:text-zinc-600";
-    const labelClasses = "block text-zinc-500 text-xs uppercase tracking-wider mb-2 text-center";
+    const inputClasses = "w-full bg-zinc-900/50 border border-zinc-700/50 p-3 text-center text-white focus:border-amber-500 outline-none transition-all rounded-lg text-xl font-bold placeholder:text-zinc-700 focus:shadow-[0_0_15px_rgba(245,158,11,0.2)] font-mono";
+    const labelClasses = "block text-zinc-500 text-[10px] uppercase tracking-widest mb-2 text-center font-bold";
 
     return (
         <div className="grid grid-cols-3 gap-4">

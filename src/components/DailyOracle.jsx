@@ -7,6 +7,7 @@ const DailyOracle = ({ isOpen, onClose, telegramLink }) => {
     const [selectedSign, setSelectedSign] = useState(null);
     const [isFlipped, setIsFlipped] = useState(false);
     const [shuffledCards, setShuffledCards] = useState([]);
+    const [isDonationOpen, setIsDonationOpen] = useState(false);
 
     useEffect(() => {
         if (isOpen) {
@@ -123,10 +124,11 @@ const DailyOracle = ({ isOpen, onClose, telegramLink }) => {
                                         </div>
                                     </motion.div>
                                 ))}
+
                             </div>
                         ) : (
                             // RESULT VIEW
-                            <div className="flex flex-col items-center text-center space-y-6">
+                            <div className="flex flex-col items-center text-center space-y-4">
                                 <motion.div
                                     initial={{ rotateY: 90, opacity: 0 }}
                                     animate={{ rotateY: 0, opacity: 1 }}
@@ -153,26 +155,32 @@ const DailyOracle = ({ isOpen, onClose, telegramLink }) => {
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.3 }}
+                                    className="w-full flex flex-col items-center space-y-4"
                                 >
-                                    <h3 className="text-xl text-white font-serif mb-2">{selectedSign?.title}</h3>
-                                    <p className="text-zinc-300 italic text-sm mb-6 max-w-sm mx-auto">
-                                        "{selectedSign?.text}"
-                                    </p>
+                                    <div>
+                                        <h3 className="text-xl text-white font-serif mb-2">{selectedSign?.title}</h3>
+                                        <p className="text-zinc-300 italic text-sm mb-2 max-w-sm mx-auto">
+                                            "{selectedSign?.text}"
+                                        </p>
+                                    </div>
 
                                     <a
                                         href={telegramLink}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center justify-center px-6 py-3 bg-[#229ED9] hover:bg-[#1E8BBF] text-white font-bold uppercase rounded-full transition-all shadow-lg hover:shadow-blue-500/30 gap-3 animate-pulse"
+                                        className="w-full max-w-xs py-3 bg-[#229ED9] hover:bg-[#1E8BBF] text-white font-bold uppercase rounded-full transition-all shadow-lg hover:shadow-blue-500/30 animate-pulse flex flex-col items-center leading-none"
                                     >
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.48-1.02-2.38-1.63-1.05-.69-.37-1.07.23-1.68.15-.15 2.81-2.57 2.86-2.79.01-.05.01-.1-.02-.14-.03-.04-.08-.06-.11-.04-.08.02-1.29.82-3.64 2.41-.34.23-.66.35-.97.35-.32-.01-.94-.18-1.4-.33-.56-.18-1.01-.28-1.04-.58.02-.16.24-.32.65-.49 2.54-1.1 4.23-1.84 5.08-2.19 2.42-.99 2.92-1.16 3.25-1.16.07 0 .23.01.33.09.09.07.12.17.12.27 0 .1 0 .2-.01.24z" />
-                                        </svg>
-                                        <div className="flex flex-col items-center leading-none text-center">
-                                            <span className="text-sm">Получить больше полезной информации</span>
-                                            <span className="text-sm mt-1">Бесплатно</span>
-                                        </div>
+                                        <span className="text-xs sm:text-sm">Получить больше полезной</span>
+                                        <span className="text-xs sm:text-sm mt-1">информации бесплатно</span>
                                     </a>
+
+                                    <button
+                                        onClick={() => setIsDonationOpen(true)}
+                                        className="w-full max-w-xs py-3 bg-transparent border border-amber-600 text-amber-500 hover:bg-amber-600 hover:text-white font-bold uppercase rounded-full transition-all shadow-[0_0_15px_rgba(245,158,11,0.2)] hover:shadow-[0_0_25px_rgba(245,158,11,0.5)] flex items-center justify-center gap-2 group"
+                                    >
+                                        <span className="group-hover:scale-110 transition-transform">🔥</span>
+                                        Подкинуть дров
+                                    </button>
                                 </motion.div>
                             </div>
                         )}
@@ -181,8 +189,75 @@ const DailyOracle = ({ isOpen, onClose, telegramLink }) => {
 
                     </motion.div>
                 </motion.div>
-            )}
-        </AnimatePresence>
+            )
+            }
+
+            {/* Donation Modal */}
+            <AnimatePresence>
+                {isDonationOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/95 backdrop-blur-xl"
+                        onClick={() => setIsDonationOpen(false)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="bg-black/80 border border-amber-500/50 p-8 rounded-2xl w-full max-w-md shadow-[0_0_50px_rgba(245,158,11,0.3)] relative overflow-hidden text-center"
+                        >
+                            {/* Fire Background Effect */}
+                            <div className="absolute inset-0 z-0 opacity-20 bg-gradient-to-t from-orange-900 via-red-900 to-black pointer-events-none"></div>
+
+                            <button
+                                onClick={() => setIsDonationOpen(false)}
+                                className="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors z-50"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+
+                            <div className="relative z-10 space-y-6">
+                                <div>
+                                    <h2 className="text-3xl font-serif text-amber-500 uppercase tracking-widest mb-2 drop-shadow-md">
+                                        Поддержать Огонь
+                                    </h2>
+                                    <p className="text-zinc-400 text-sm uppercase tracking-wider">
+                                        Благодарность Мастеру
+                                    </p>
+                                </div>
+
+                                <div className="bg-white p-4 rounded-xl inline-block shadow-2xl">
+                                    <img
+                                        src="/images/qr_code.png"
+                                        alt="QR Code for Donation"
+                                        className="w-48 h-48 object-contain"
+                                    />
+                                </div>
+
+                                <p className="text-amber-100/90 italic text-sm font-medium leading-relaxed max-w-xs mx-auto">
+                                    "Твоя поддержка помогает огню греть ярче, а мастеру создавать. Процветания твоему Роду!"
+                                </p>
+
+                                <a
+                                    href="https://pay.cloudtips.ru/p/22e8f9f6"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block w-full py-4 bg-gradient-to-r from-amber-600 to-red-600 hover:from-amber-500 hover:to-red-500 text-white font-bold uppercase rounded-xl transition-all shadow-lg hover:shadow-orange-500/40 relative overflow-hidden group"
+                                >
+                                    <span className="relative z-10">Поблагодарить</span>
+                                    <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                                </a>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </AnimatePresence >
     );
 };
 
