@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import DateInput from './components/DateInput';
 import DailyOracle from './components/DailyOracle';
@@ -8,7 +8,7 @@ import SketchGenerator from './components/SketchGenerator';
 
 
 const CONTACTS = {
-  telegram: "https://t.me/Oleg_topordorf",
+  telegram: "https://t.me/topordorf",
   whatsapp: "https://wa.me/qr/KSWHUSHUBL5HJ1",
   max: "https://max.ru/u/f9LHodD0cOLV4pqZZg8Zbt2CkYFRwJfgzbCXhunpRVxVTjbhBp4zHw2YQM0",
   vk: "https://vk.com/твоя_ссылка"
@@ -43,6 +43,27 @@ function App() {
   const [isLegendOpen, setIsLegendOpen] = useState(false);
   const [isSketchOpen, setIsSketchOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState(null);
+
+  // Maintenance Timer State
+  const [maintenanceTime, setMaintenanceTime] = useState(6540); // 1h 49m = 109m * 60s = 6540s
+
+  useEffect(() => {
+    // Reset timer on mount (every time user opens/refreshes page)
+    setMaintenanceTime(6540);
+
+    const timer = setInterval(() => {
+      setMaintenanceTime((prev) => (prev > 0 ? prev - 1 : 6540)); // Loop or stop at 0? User said "starts from beginning every time opens". On refresh it resets.
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatTime = (seconds) => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
 
   // Promo Code State
   const [isPromoModalOpen, setIsPromoModalOpen] = useState(false);
@@ -509,7 +530,7 @@ function App() {
       </div >
 
       {/* Кнопка открытия Мастерской Эскизов */}
-      <div className="w-full max-w-md my-8">
+      <div className="w-full max-w-md my-8 flex flex-col items-center">
         <button
           onClick={() => setIsPromoModalOpen(true)}
           className="w-full relative group overflow-hidden rounded-xl border border-zinc-700 hover:border-orange-500 transition-all duration-500 shadow-2xl"
@@ -564,6 +585,20 @@ function App() {
               </div>
 
               <div className="relative z-10">
+                {/* Maintenance Message (Inside Modal) */}
+                <div className="mb-6 text-center animate-pulse border-b border-zinc-800 pb-4">
+                  <p className="text-red-500 font-bold uppercase tracking-widest text-sm mb-1">
+                    ⚠️ Техническое обслуживание ⚠️
+                  </p>
+                  <p className="text-zinc-500 text-[10px] uppercase tracking-wide">
+                    Возможны перебои в работе
+                  </p>
+                  <p className="text-zinc-400 text-xs uppercase tracking-wide mt-2">
+                    Ожидаемое время завершения:<br />
+                    <span className="text-white font-mono text-xl font-bold">{formatTime(maintenanceTime)}</span>
+                  </p>
+                </div>
+
                 <h3 className="text-xl font-bold text-white uppercase tracking-widest mb-6">
                   Доступ к Мастерской
                 </h3>
